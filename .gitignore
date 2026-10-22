@@ -1,0 +1,17 @@
+# Xcode 构建产物
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# 打包产物
+EdgeVolume.tipa
+Payload/
+
+# 压缩包
+*.zip
+
+# 系统垃圾
+.DS_Store

@@ -1,0 +1,33 @@
+name: Build EdgeVolume IPA
+
+on:
+  workflow_dispatch:   # 在 Actions 页面手动触发
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      # ldid 用于把私有 entitlements 写入 Mach-O（巨魔必需）
+      # 说明：本仓库已内置 EdgeVolume.xcodeproj，无需 xcodegen
+      - name: Install dependencies
+        run: brew install ldid
+
+      - name: Show schemes
+        run: xcodebuild -project EdgeVolume.xcodeproj -list
+
+      - name: Build IPA
+        run: |
+          chmod +x build-ipa.sh
+          ./build-ipa.sh
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EdgeVolume.tipa
+          path: EdgeVolume.tipa
+          if-no-files-found: error

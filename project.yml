@@ -1,0 +1,35 @@
+name: EdgeVolume
+options:
+  bundleIdPrefix: com.edgevolume
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+targets:
+  EdgeVolume:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: EdgeVolume
+        excludes:
+          - "Private/*.tbd"
+          - "Info.plist"
+          - "entitlements.plist"
+    dependencies:
+      - sdk: AVFoundation.framework
+      - sdk: MediaPlayer.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.edgevolume.app
+        PRODUCT_NAME: EdgeVolume
+        INFOPLIST_FILE: EdgeVolume/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SKIP_INSTALL: YES
+        # FrontBoard / FrontBoardServices / RunningBoardServices 私有框架通过 .tbd 链接
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - "$(SRCROOT)/EdgeVolume/Private/FrontBoard.tbd"
+          - "$(SRCROOT)/EdgeVolume/Private/FrontBoardServices.tbd"
+          - "$(SRCROOT)/EdgeVolume/Private/RunningBoardServices.tbd"
+          - "$(SRCROOT)/EdgeVolume/Private/AppleAccount.tbd"

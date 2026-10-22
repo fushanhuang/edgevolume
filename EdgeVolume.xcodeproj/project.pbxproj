@@ -1,0 +1,765 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		16ED864D6B44B65A5E65639C /* OverlayContainerView.m in Sources */ = {
+				isa = PBXBuildFile;
+				fileRef = 1B74CED6EC76DC41279FAF82;
+			};
+		26A84BEA5219E3A90FF2EA40 /* main.m in Sources */ = {
+				isa = PBXBuildFile;
+				fileRef = 31A2E2DC71224E817CBC94CF;
+			};
+		309D26F1C44428B6BD709DAD /* SceneDelegate.m in Sources */ = {
+				isa = PBXBuildFile;
+				fileRef = 8D5BC8E1596643DF4F691FA6;
+			};
+		45F308D6B3A371B1D154E598 /* QuartzCore.framework in Frameworks */ = {
+				isa = PBXBuildFile;
+				fileRef = B8B586FF5D03DB0C666A06D2;
+			};
+		4A6E733F5494E7DAD2E11BA1 /* OverlayRootViewController.m in Sources */ = {
+				isa = PBXBuildFile;
+				fileRef = 79133150FAB6BD806DE3CD8B;
+			};
+		537BA4CA16B114297C365A2E /* CoreGraphics.framework in Frameworks */ = {
+				isa = PBXBuildFile;
+				fileRef = 91D2E6A334076D1D2D443FB3;
+			};
+		5FFD92B5DE69351F1599EFC2 /* VolumeHUDView.m in Sources */ = {
+				isa = PBXBuildFile;
+				fileRef = C975B80FC0F9E4D5B1A9CDE4;
+			};
+		66CE531F54567FB14CA6E0E7 /* AVFoundation.framework in Frameworks */ = {
+				isa = PBXBuildFile;
+				fileRef = C537E222A62CA9E72DBC0801;
+			};
+		6C44B38D84886B351063AC13 /* VolumeController.m in Sources */ = {
+				isa = PBXBuildFile;
+				fileRef = 77A0439FFFB82794524ADCCB;
+			};
+		8AEB38B578FE69F36D80DDDF /* SettingsViewController.m in Sources */ = {
+				isa = PBXBuildFile;
+				fileRef = A621739700046ACB3968C028;
+			};
+		A9544236508C8D169ECD61DF /* EVSettings.m in Sources */ = {
+				isa = PBXBuildFile;
+				fileRef = C6FE92447AF3C0C0C3803290;
+			};
+		C40C3C53289D742514F4C906 /* PassThroughWindow.m in Sources */ = {
+				isa = PBXBuildFile;
+				fileRef = B54EB152BE7CEA7B5D9FA637;
+			};
+		CE3B0D41527EC48618594156 /* UIKit.framework in Frameworks */ = {
+				isa = PBXBuildFile;
+				fileRef = F5AD125D1EAFEBF67B9D06C4;
+			};
+		E949C04944F788F13FE54036 /* AppDelegate.m in Sources */ = {
+				isa = PBXBuildFile;
+				fileRef = 52D8E70DCC7D418A33CA12AA;
+			};
+		EAC906D404A21C01D354F425 /* MediaPlayer.framework in Frameworks */ = {
+				isa = PBXBuildFile;
+				fileRef = 322B213C4A049648ED479307;
+			};
+		EDF47CB83DB6C12D21B3B200 /* EdgeVolumeHandle.m in Sources */ = {
+				isa = PBXBuildFile;
+				fileRef = A48D7C3E687DA252CA3817B9;
+			};
+		F915119CE49111345683EA54 /* Assets.xcassets in Resources */ = {
+				isa = PBXBuildFile;
+				fileRef = BCF67820A094DA4A44ECE4DF;
+			};
+		FD8D25374740B44AE0810FA9 /* Foundation.framework in Frameworks */ = {
+				isa = PBXBuildFile;
+				fileRef = 244C250962B297053A3D97C5;
+			};
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1B74CED6EC76DC41279FAF82 /* OverlayContainerView.m */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.objc;
+				path = OverlayContainerView.m;
+				sourceTree = "<group>";
+			};
+		1CE030C7526420B40FF88D98 /* Private\AppleAccount.tbd */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = sourcecode.text-based-dylib-standard-file;
+				path = "Private\\AppleAccount.tbd";
+				sourceTree = "<group>";
+			};
+		244C250962B297053A3D97C5 /* Foundation.framework */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = wrapper.framework;
+				name = Foundation.framework;
+				path = System/Library/Frameworks/Foundation.framework;
+				sourceTree = SDKROOT;
+			};
+		31A2E2DC71224E817CBC94CF /* main.m */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.objc;
+				path = main.m;
+				sourceTree = "<group>";
+			};
+		322B213C4A049648ED479307 /* MediaPlayer.framework */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = wrapper.framework;
+				name = MediaPlayer.framework;
+				path = System/Library/Frameworks/MediaPlayer.framework;
+				sourceTree = SDKROOT;
+			};
+		3DA10C77A5072A23EF43FA2A /* EdgeVolume.app */ = {
+				isa = PBXFileReference;
+				explicitFileType = wrapper.application;
+				includeInIndex = 0;
+				path = EdgeVolume.app;
+				sourceTree = BUILT_PRODUCTS_DIR;
+			};
+		502D8CA907954D6DF5267961 /* EVSettings.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = EVSettings.h;
+				sourceTree = "<group>";
+			};
+		51CDF8E7A78D4C9E07213A11 /* OverlayContainerView.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = OverlayContainerView.h;
+				sourceTree = "<group>";
+			};
+		52D8E70DCC7D418A33CA12AA /* AppDelegate.m */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.objc;
+				path = AppDelegate.m;
+				sourceTree = "<group>";
+			};
+		59B194DB965698943C91BDCA /* Private\FrontBoard.tbd */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = sourcecode.text-based-dylib-standard-file;
+				path = "Private\\FrontBoard.tbd";
+				sourceTree = "<group>";
+			};
+		60A46369B2DE9EB9F11D79A9 /* Private\FrontBoardServices.tbd */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = sourcecode.text-based-dylib-standard-file;
+				path = "Private\\FrontBoardServices.tbd";
+				sourceTree = "<group>";
+			};
+		6213B4762B0C7DB2D94C037F /* Private\RunningBoardServices.tbd */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = sourcecode.text-based-dylib-standard-file;
+				path = "Private\\RunningBoardServices.tbd";
+				sourceTree = "<group>";
+			};
+		767CE5287468418A13868B72 /* VolumeHUDView.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = VolumeHUDView.h;
+				sourceTree = "<group>";
+			};
+		77A0439FFFB82794524ADCCB /* VolumeController.m */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.objc;
+				path = VolumeController.m;
+				sourceTree = "<group>";
+			};
+		79133150FAB6BD806DE3CD8B /* OverlayRootViewController.m */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.objc;
+				path = OverlayRootViewController.m;
+				sourceTree = "<group>";
+			};
+		8A044F95255BE728E6D9DE5D /* Private\FBSOrientationObserver.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = "Private\\FBSOrientationObserver.h";
+				sourceTree = "<group>";
+			};
+		8D5BC8E1596643DF4F691FA6 /* SceneDelegate.m */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.objc;
+				path = SceneDelegate.m;
+				sourceTree = "<group>";
+			};
+		91D2E6A334076D1D2D443FB3 /* CoreGraphics.framework */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = wrapper.framework;
+				name = CoreGraphics.framework;
+				path = System/Library/Frameworks/CoreGraphics.framework;
+				sourceTree = SDKROOT;
+			};
+		9DB26D9C1B8C108C9EF2A9A8 /* OverlayRootViewController.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = OverlayRootViewController.h;
+				sourceTree = "<group>";
+			};
+		9E34459DD27A257AB3303E24 /* PassThroughWindow.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = PassThroughWindow.h;
+				sourceTree = "<group>";
+			};
+		A48D7C3E687DA252CA3817B9 /* EdgeVolumeHandle.m */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.objc;
+				path = EdgeVolumeHandle.m;
+				sourceTree = "<group>";
+			};
+		A48DBD136D6EDC8D428DD898 /* VolumeController.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = VolumeController.h;
+				sourceTree = "<group>";
+			};
+		A4FF1209F50AF0B2F9816FE5 /* Private\AVSystemController.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = "Private\\AVSystemController.h";
+				sourceTree = "<group>";
+			};
+		A621739700046ACB3968C028 /* SettingsViewController.m */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.objc;
+				path = SettingsViewController.m;
+				sourceTree = "<group>";
+			};
+		AB30AE2122255412E389E50D /* EdgeVolumeHandle.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = EdgeVolumeHandle.h;
+				sourceTree = "<group>";
+			};
+		B54EB152BE7CEA7B5D9FA637 /* PassThroughWindow.m */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.objc;
+				path = PassThroughWindow.m;
+				sourceTree = "<group>";
+			};
+		B8B586FF5D03DB0C666A06D2 /* QuartzCore.framework */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = wrapper.framework;
+				name = QuartzCore.framework;
+				path = System/Library/Frameworks/QuartzCore.framework;
+				sourceTree = SDKROOT;
+			};
+		BCF67820A094DA4A44ECE4DF /* Assets.xcassets */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = folder.assetcatalog;
+				path = Assets.xcassets;
+				sourceTree = "<group>";
+			};
+		C537E222A62CA9E72DBC0801 /* AVFoundation.framework */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = wrapper.framework;
+				name = AVFoundation.framework;
+				path = System/Library/Frameworks/AVFoundation.framework;
+				sourceTree = SDKROOT;
+			};
+		C6FE92447AF3C0C0C3803290 /* EVSettings.m */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.objc;
+				path = EVSettings.m;
+				sourceTree = "<group>";
+			};
+		C975B80FC0F9E4D5B1A9CDE4 /* VolumeHUDView.m */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.objc;
+				path = VolumeHUDView.m;
+				sourceTree = "<group>";
+			};
+		D61C8EDD3763B43DAC0947BD /* SceneDelegate.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = SceneDelegate.h;
+				sourceTree = "<group>";
+			};
+		E79147D48BCC557B7220D08B /* SettingsViewController.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = SettingsViewController.h;
+				sourceTree = "<group>";
+			};
+		EE378E44BCE8AC28A84C8E6C /* Private\FBSOrientationUpdate.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = "Private\\FBSOrientationUpdate.h";
+				sourceTree = "<group>";
+			};
+		F28CEC5BCAC1FDA21D9EEED2 /* AppDelegate.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = AppDelegate.h;
+				sourceTree = "<group>";
+			};
+		F5AD125D1EAFEBF67B9D06C4 /* UIKit.framework */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = wrapper.framework;
+				name = UIKit.framework;
+				path = System/Library/Frameworks/UIKit.framework;
+				sourceTree = SDKROOT;
+			};
+		F67294A3285EA6878C8B8E60 /* Private\UIKitPrivate.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = "Private\\UIKitPrivate.h";
+				sourceTree = "<group>";
+			};
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		941C8A7535D232127F5BE547 /* Frameworks */ = {
+				isa = PBXFrameworksBuildPhase;
+				buildActionMask = 2147483647;
+				files = (
+					CE3B0D41527EC48618594156,
+					FD8D25374740B44AE0810FA9,
+					537BA4CA16B114297C365A2E,
+					45F308D6B3A371B1D154E598,
+					66CE531F54567FB14CA6E0E7,
+					EAC906D404A21C01D354F425,
+				);
+				runOnlyForDeploymentPostprocessing = 0;
+			};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		314BA4854B91054F58F770BF /* Products */ = {
+				isa = PBXGroup;
+				children = (
+					3DA10C77A5072A23EF43FA2A,
+				);
+				name = Products;
+				sourceTree = "<group>";
+			};
+		3E227F681824194AA55F9E4B = {
+				isa = PBXGroup;
+				children = (
+					4DFEED0B7F68185F3CA4C4BA,
+					9967992A1B3A03B3D65B7902,
+					314BA4854B91054F58F770BF,
+				);
+				sourceTree = "<group>";
+			};
+		4DFEED0B7F68185F3CA4C4BA /* EdgeVolume */ = {
+				isa = PBXGroup;
+				children = (
+					52D8E70DCC7D418A33CA12AA,
+					A48D7C3E687DA252CA3817B9,
+					C6FE92447AF3C0C0C3803290,
+					31A2E2DC71224E817CBC94CF,
+					1B74CED6EC76DC41279FAF82,
+					79133150FAB6BD806DE3CD8B,
+					B54EB152BE7CEA7B5D9FA637,
+					8D5BC8E1596643DF4F691FA6,
+					A621739700046ACB3968C028,
+					77A0439FFFB82794524ADCCB,
+					C975B80FC0F9E4D5B1A9CDE4,
+					F28CEC5BCAC1FDA21D9EEED2,
+					AB30AE2122255412E389E50D,
+					502D8CA907954D6DF5267961,
+					51CDF8E7A78D4C9E07213A11,
+					9DB26D9C1B8C108C9EF2A9A8,
+					9E34459DD27A257AB3303E24,
+					A4FF1209F50AF0B2F9816FE5,
+					8A044F95255BE728E6D9DE5D,
+					EE378E44BCE8AC28A84C8E6C,
+					F67294A3285EA6878C8B8E60,
+					D61C8EDD3763B43DAC0947BD,
+					E79147D48BCC557B7220D08B,
+					A48DBD136D6EDC8D428DD898,
+					767CE5287468418A13868B72,
+					BCF67820A094DA4A44ECE4DF,
+					918E39C0EFC22600EF6EFE19,
+				);
+				path = EdgeVolume;
+				sourceTree = "<group>";
+			};
+		918E39C0EFC22600EF6EFE19 /* Private */ = {
+				isa = PBXGroup;
+				children = (
+					1CE030C7526420B40FF88D98,
+					59B194DB965698943C91BDCA,
+					60A46369B2DE9EB9F11D79A9,
+					6213B4762B0C7DB2D94C037F,
+				);
+				path = Private;
+				sourceTree = "<group>";
+			};
+		9967992A1B3A03B3D65B7902 /* Frameworks */ = {
+				isa = PBXGroup;
+				children = (
+					F5AD125D1EAFEBF67B9D06C4,
+					244C250962B297053A3D97C5,
+					91D2E6A334076D1D2D443FB3,
+					B8B586FF5D03DB0C666A06D2,
+					C537E222A62CA9E72DBC0801,
+					322B213C4A049648ED479307,
+				);
+				name = Frameworks;
+				sourceTree = "<group>";
+			};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C6D12A5B407F6384FD2DA56D = {
+				isa = PBXNativeTarget;
+				buildConfigurationList = 0D2B9BAE2F83FB7E8A973B04;
+				buildPhases = (
+					9EFC3759FB9E9057C07AC82D,
+					941C8A7535D232127F5BE547,
+					C9127737D60F5110EAA4EDF7,
+				);
+				buildRules = (
+				);
+				dependencies = (
+				);
+				name = EdgeVolume;
+				productName = EdgeVolume;
+				productReference = 3DA10C77A5072A23EF43FA2A;
+				productType = com.apple.product-type.application;
+			};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F246AB4195893D38F8D0B3B7 /* Project object */ = {
+				isa = PBXProject;
+				attributes = {
+					BuildIndependentTargetsInParallel = 1;
+					LastSwiftUpdateCheck = 1600;
+					LastUpgradeCheck = 1600;
+					TargetAttributes = {
+						C6D12A5B407F6384FD2DA56D = {
+							CreatedOnToolsVersion = 16.0;
+						};
+					};
+				};
+				buildConfigurationList = 34D3707856493FE8E6082BEB;
+				compatibilityVersion = "Xcode 14.0";
+				developmentRegion = en;
+				hasScannedForEncodings = 0;
+				knownRegions = (
+					en,
+					Base,
+				);
+				mainGroup = 3E227F681824194AA55F9E4B;
+				productRefGroup = 314BA4854B91054F58F770BF;
+				projectDirPath = "";
+				projectRoot = "";
+				targets = (
+					C6D12A5B407F6384FD2DA56D,
+				);
+			};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C9127737D60F5110EAA4EDF7 /* Resources */ = {
+				isa = PBXResourcesBuildPhase;
+				buildActionMask = 2147483647;
+				files = (
+					F915119CE49111345683EA54,
+				);
+				runOnlyForDeploymentPostprocessing = 0;
+			};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9EFC3759FB9E9057C07AC82D /* Sources */ = {
+				isa = PBXSourcesBuildPhase;
+				buildActionMask = 2147483647;
+				files = (
+					E949C04944F788F13FE54036,
+					EDF47CB83DB6C12D21B3B200,
+					A9544236508C8D169ECD61DF,
+					26A84BEA5219E3A90FF2EA40,
+					16ED864D6B44B65A5E65639C,
+					4A6E733F5494E7DAD2E11BA1,
+					C40C3C53289D742514F4C906,
+					309D26F1C44428B6BD709DAD,
+					8AEB38B578FE69F36D80DDDF,
+					6C44B38D84886B351063AC13,
+					5FFD92B5DE69351F1599EFC2,
+				);
+				runOnlyForDeploymentPostprocessing = 0;
+			};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1E80077458BA244F8DBE4C72 = {
+				isa = XCBuildConfiguration;
+				buildSettings = {
+					ARCHS = arm64;
+					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+					CLANG_ANALYZER_NONNULL = YES;
+					CLANG_ENABLE_MODULES = YES;
+					CLANG_ENABLE_OBJC_ARC = YES;
+					CLANG_WARN_BOOL_CONVERSION = YES;
+					CLANG_WARN_CONSTANT_CONVERSION = YES;
+					CLANG_WARN_EMPTY_BODY = YES;
+					CLANG_WARN_ENUM_CONVERSION = YES;
+					CLANG_WARN_INFINITE_RECURSION = YES;
+					CLANG_WARN_INT_CONVERSION = YES;
+					CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+					CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+					CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+					CLANG_WARN_OBJC_ROOT_CLASS = YES;
+					CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+					CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+					CLANG_WARN_STRICT_PROTOTYPES = YES;
+					CLANG_WARN_SUSPICIOUS_MOVE = YES;
+					CLANG_WARN_UNREACHABLE_CODE = YES;
+					CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+					CODE_SIGN_ENTITLEMENTS = EdgeVolume/entitlements.plist;
+					CODE_SIGN_STYLE = Automatic;
+					CURRENT_PROJECT_VERSION = 1;
+					ENABLE_USER_SCRIPT_SANDBOXING = YES;
+					GCC_C_LANGUAGE_STANDARD = gnu17;
+					GCC_NO_COMMON_BLOCKS = YES;
+					GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+					GCC_WARN_ABOUT_RETURN_TYPE = YES;
+					GCC_WARN_UNDECLARED_SELECTOR = YES;
+					GCC_WARN_UNINITIALIZED_AUTOS = YES;
+					GCC_WARN_UNUSED_FUNCTION = YES;
+					GCC_WARN_UNUSED_VARIABLE = YES;
+					INFOPLIST_FILE = EdgeVolume/Info.plist;
+					IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+					LD_RUNPATH_SEARCH_PATHS = (
+						"$(inherited)",
+						@executable_path/Frameworks,
+					);
+					MARKETING_VERSION = 1.0;
+					MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+					ONLY_ACTIVE_ARCH = YES;
+					OTHER_LDFLAGS = (
+						"$(inherited)",
+						"$(SRCROOT)/EdgeVolume/Private/FrontBoard.tbd",
+						"$(SRCROOT)/EdgeVolume/Private/FrontBoardServices.tbd",
+						"$(SRCROOT)/EdgeVolume/Private/RunningBoardServices.tbd",
+						"$(SRCROOT)/EdgeVolume/Private/AppleAccount.tbd",
+					);
+					PRODUCT_BUNDLE_IDENTIFIER = com.edgevolume.app;
+					PRODUCT_NAME = "$(TARGET_NAME)";
+					SDKROOT = iphoneos;
+					TARGETED_DEVICE_FAMILY = "1,2";
+					DEBUG_INFORMATION_FORMAT = dwarf;
+					GCC_DYNAMIC_NO_PIC = NO;
+					GCC_OPTIMIZATION_LEVEL = 0;
+					GCC_PREPROCESSOR_DEFINITIONS = (
+						"DEBUG=1",
+						"$(inherited)",
+					);
+					ENABLE_TESTABILITY = YES;
+				};
+				name = Debug;
+			};
+		6E5915619D471E26C10C171C = {
+				isa = XCBuildConfiguration;
+				buildSettings = {
+					ARCHS = arm64;
+					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+					CLANG_ANALYZER_NONNULL = YES;
+					CLANG_ENABLE_MODULES = YES;
+					CLANG_ENABLE_OBJC_ARC = YES;
+					CLANG_WARN_BOOL_CONVERSION = YES;
+					CLANG_WARN_CONSTANT_CONVERSION = YES;
+					CLANG_WARN_EMPTY_BODY = YES;
+					CLANG_WARN_ENUM_CONVERSION = YES;
+					CLANG_WARN_INFINITE_RECURSION = YES;
+					CLANG_WARN_INT_CONVERSION = YES;
+					CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+					CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+					CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+					CLANG_WARN_OBJC_ROOT_CLASS = YES;
+					CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+					CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+					CLANG_WARN_STRICT_PROTOTYPES = YES;
+					CLANG_WARN_SUSPICIOUS_MOVE = YES;
+					CLANG_WARN_UNREACHABLE_CODE = YES;
+					CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+					CODE_SIGN_ENTITLEMENTS = EdgeVolume/entitlements.plist;
+					CODE_SIGN_STYLE = Automatic;
+					CURRENT_PROJECT_VERSION = 1;
+					ENABLE_USER_SCRIPT_SANDBOXING = YES;
+					GCC_C_LANGUAGE_STANDARD = gnu17;
+					GCC_NO_COMMON_BLOCKS = YES;
+					GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+					GCC_WARN_ABOUT_RETURN_TYPE = YES;
+					GCC_WARN_UNDECLARED_SELECTOR = YES;
+					GCC_WARN_UNINITIALIZED_AUTOS = YES;
+					GCC_WARN_UNUSED_FUNCTION = YES;
+					GCC_WARN_UNUSED_VARIABLE = YES;
+					INFOPLIST_FILE = EdgeVolume/Info.plist;
+					IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+					LD_RUNPATH_SEARCH_PATHS = (
+						"$(inherited)",
+						@executable_path/Frameworks,
+					);
+					MARKETING_VERSION = 1.0;
+					MTL_ENABLE_DEBUG_INFO = NO;
+					ONLY_ACTIVE_ARCH = NO;
+					OTHER_LDFLAGS = (
+						"$(inherited)",
+						"$(SRCROOT)/EdgeVolume/Private/FrontBoard.tbd",
+						"$(SRCROOT)/EdgeVolume/Private/FrontBoardServices.tbd",
+						"$(SRCROOT)/EdgeVolume/Private/RunningBoardServices.tbd",
+						"$(SRCROOT)/EdgeVolume/Private/AppleAccount.tbd",
+					);
+					PRODUCT_BUNDLE_IDENTIFIER = com.edgevolume.app;
+					PRODUCT_NAME = "$(TARGET_NAME)";
+					SDKROOT = iphoneos;
+					TARGETED_DEVICE_FAMILY = "1,2";
+					DEBUG_INFORMATION_FORMAT = dwarf-with-dsym;
+					GCC_OPTIMIZATION_LEVEL = s;
+					VALIDATE_PRODUCT = YES;
+				};
+				name = Release;
+			};
+		B0F91419B343D0A2048849C2 = {
+				isa = XCBuildConfiguration;
+				buildSettings = {
+					ALWAYS_SEARCH_USER_PATHS = NO;
+					CLANG_ANALYZER_NONNULL = YES;
+					CLANG_ENABLE_MODULES = YES;
+					CLANG_WARN_BOOL_CONVERSION = YES;
+					CLANG_WARN_CONSTANT_CONVERSION = YES;
+					CLANG_WARN_EMPTY_BODY = YES;
+					CLANG_WARN_ENUM_CONVERSION = YES;
+					CLANG_WARN_INFINITE_RECURSION = YES;
+					CLANG_WARN_INT_CONVERSION = YES;
+					CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+					CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+					CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+					CLANG_WARN_OBJC_ROOT_CLASS = YES;
+					CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+					CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+					CLANG_WARN_STRICT_PROTOTYPES = YES;
+					CLANG_WARN_SUSPICIOUS_MOVE = YES;
+					CLANG_WARN_UNREACHABLE_CODE = YES;
+					CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+					COPY_PHASE_STRIP = NO;
+					ENABLE_USER_SCRIPT_SANDBOXING = YES;
+					GCC_C_LANGUAGE_STANDARD = gnu17;
+					GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+					GCC_WARN_ABOUT_RETURN_TYPE = YES;
+					GCC_WARN_UNDECLARED_SELECTOR = YES;
+					GCC_WARN_UNINITIALIZED_AUTOS = YES;
+					GCC_WARN_UNUSED_FUNCTION = YES;
+					GCC_WARN_UNUSED_VARIABLE = YES;
+					IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+					LD_RUNPATH_SEARCH_PATHS = (
+						"$(inherited)",
+						/usr/lib/swift,
+						@executable_path/Frameworks,
+					);
+					SDKROOT = iphoneos;
+					DEBUG_INFORMATION_FORMAT = dwarf;
+					ENABLE_STRICT_OBJC_MSGSEND = NO;
+					GCC_DYNAMIC_NO_PIC = NO;
+					GCC_OPTIMIZATION_LEVEL = 0;
+					ONLY_ACTIVE_ARCH = YES;
+				};
+				name = Debug;
+			};
+		C9FCE891EED5EA8F3904D80B = {
+				isa = XCBuildConfiguration;
+				buildSettings = {
+					ALWAYS_SEARCH_USER_PATHS = NO;
+					CLANG_ANALYZER_NONNULL = YES;
+					CLANG_ENABLE_MODULES = YES;
+					CLANG_WARN_BOOL_CONVERSION = YES;
+					CLANG_WARN_CONSTANT_CONVERSION = YES;
+					CLANG_WARN_EMPTY_BODY = YES;
+					CLANG_WARN_ENUM_CONVERSION = YES;
+					CLANG_WARN_INFINITE_RECURSION = YES;
+					CLANG_WARN_INT_CONVERSION = YES;
+					CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+					CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+					CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+					CLANG_WARN_OBJC_ROOT_CLASS = YES;
+					CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+					CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+					CLANG_WARN_STRICT_PROTOTYPES = YES;
+					CLANG_WARN_SUSPICIOUS_MOVE = YES;
+					CLANG_WARN_UNREACHABLE_CODE = YES;
+					CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+					COPY_PHASE_STRIP = NO;
+					ENABLE_USER_SCRIPT_SANDBOXING = YES;
+					GCC_C_LANGUAGE_STANDARD = gnu17;
+					GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+					GCC_WARN_ABOUT_RETURN_TYPE = YES;
+					GCC_WARN_UNDECLARED_SELECTOR = YES;
+					GCC_WARN_UNINITIALIZED_AUTOS = YES;
+					GCC_WARN_UNUSED_FUNCTION = YES;
+					GCC_WARN_UNUSED_VARIABLE = YES;
+					IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+					LD_RUNPATH_SEARCH_PATHS = (
+						"$(inherited)",
+						/usr/lib/swift,
+						@executable_path/Frameworks,
+					);
+					SDKROOT = iphoneos;
+					DEBUG_INFORMATION_FORMAT = dwarf-with-dsym;
+					ENABLE_NS_ASSERTIONS = NO;
+					GCC_OPTIMIZATION_LEVEL = s;
+					ONLY_ACTIVE_ARCH = NO;
+					VALIDATE_PRODUCT = YES;
+				};
+				name = Release;
+			};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0D2B9BAE2F83FB7E8A973B04 = {
+				isa = XCConfigurationList;
+				buildConfigurations = (
+					1E80077458BA244F8DBE4C72,
+					6E5915619D471E26C10C171C,
+				);
+				defaultConfigurationIsVisible = 0;
+			};
+		34D3707856493FE8E6082BEB = {
+				isa = XCConfigurationList;
+				buildConfigurations = (
+					B0F91419B343D0A2048849C2,
+					C9FCE891EED5EA8F3904D80B,
+				);
+				defaultConfigurationIsVisible = 0;
+				defaultConfigurationName = Release;
+			};
+/* End XCConfigurationList section */
+	};
+	rootObject = F246AB4195893D38F8D0B3B7 /* Project object */;
+}
