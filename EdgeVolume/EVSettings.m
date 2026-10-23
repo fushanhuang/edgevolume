@@ -18,6 +18,7 @@ NSString *const kEVSettingsChangedNotification = @"EVSettingsChangedNotification
         @"EVEdge": @(EVEdgeRight),
         @"EVCenterYFraction": @(0.45),
         @"EVTrackLength": @(180.0),
+        @"EVTrackThickness": @(20.0),
         @"EVTouchWidth": @(44.0),
         @"EVTrackAlpha": @(0.55),
         @"EVLockPosition": @NO,
@@ -25,9 +26,9 @@ NSString *const kEVSettingsChangedNotification = @"EVSettingsChangedNotification
         @"EVKeepAlive": @YES,
         @"EVVolumeCategory": @(0),
         @"EVKBEnabled": @YES,
-        @"EVKBUpModifier": @(EVKBModifierCommand),
+        @"EVKBUpModifier": @(EVKBModifierOption),
         @"EVKBUpKey": @(EVKBKeyPlus),
-        @"EVKBDownModifier": @(EVKBModifierCommand),
+        @"EVKBDownModifier": @(EVKBModifierOption),
         @"EVKBDownKey": @(EVKBKeyMinus),
         @"EVKBStep": @(0.10),
         @"EVKBDiagnostic": @NO,
@@ -57,6 +58,13 @@ NSString *const kEVSettingsChangedNotification = @"EVSettingsChangedNotification
 - (void)setTrackLength:(CGFloat)v {
     v = fmax(80.0, fmin(320.0, v));
     [[NSUserDefaults standardUserDefaults] setDouble:v forKey:@"EVTrackLength"];
+    [self postChanged];
+}
+
+- (CGFloat)trackThickness { return [[NSUserDefaults standardUserDefaults] doubleForKey:@"EVTrackThickness"]; }
+- (void)setTrackThickness:(CGFloat)v {
+    v = fmax(10.0, fmin(44.0, v));
+    [[NSUserDefaults standardUserDefaults] setDouble:v forKey:@"EVTrackThickness"];
     [self postChanged];
 }
 

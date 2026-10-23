@@ -59,13 +59,18 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    CGFloat trackW = 10.0;
+    // 可见轨道粗细（可设置 10–44pt，默认 20pt）；圆角/中心圆点随粗细自适应
+    CGFloat trackW = fmax(10.0, [EVSettings shared].trackThickness);
     CGFloat pad = (CGRectGetWidth(self.bounds) - trackW) / 2.0;
     self.trackView.frame = CGRectMake(pad, 0.0, trackW, CGRectGetHeight(self.bounds));
+    self.trackView.layer.cornerRadius = trackW / 2.0;
+    self.fillView.layer.cornerRadius = fmax(2.0, trackW / 2.0 - 1.5);
+    CGFloat grip = fmin(10.0, fmax(4.0, trackW * 0.4));
+    self.gripView.layer.cornerRadius = grip / 2.0;
+    self.gripView.frame = CGRectMake((trackW - grip) / 2.0,
+                                     (CGRectGetHeight(self.bounds) - grip) / 2.0,
+                                     grip, grip);
     [self layoutFill];
-    self.gripView.frame = CGRectMake((trackW - 6.0) / 2.0,
-                                     (CGRectGetHeight(self.bounds) - 6.0) / 2.0,
-                                     6.0, 6.0);
 }
 
 - (void)layoutFill {

@@ -11,6 +11,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
     EVRowLength,
     EVRowAlpha,
     EVRowTouchWidth,
+    EVRowThickness,
     EVRowLock,
     EVRowTouchMode,
     EVRowKBEnabled,
@@ -114,7 +115,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
-        case 0: return 8;
+        case 0: return 9;
         case 1: return 8;
         case 2: return 3;
         default: return 3;
@@ -132,8 +133,8 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     switch (section) {
-        case 0: return @"上下滑动滑动条 = 调节音量；左右拖动 = 移动位置；单击 = 显示当前音量；长按 = 紧急隐藏悬浮窗。触控热区比可见滑条宽（默认 44pt），可在上方调整。";
-        case 1: return @"快捷键经私有 IOHID 接口在后台监听（只观测、不拦截，不影响按键在原 App 里的功能）。若同一组合在前台 App 有自带功能（如 Safari 的 ⌘++ 是放大页面），两者会同时生效，可改用 ⌥ 或 ⌃ 避免。地球键(🌐)是系统保留键，无法被 App 捕获，因此提供 ⌘/⌥/⌃/⇧ 选择。退到后台后仍响应快捷键需保持「后台保活」开启；重启 iPad 后需重新打开一次本应用。";
+        case 0: return @"上下滑动滑动条 = 调节音量；左右拖动 = 移动位置；单击 = 显示当前音量；长按 = 紧急隐藏悬浮窗。「轨道粗细」是可见滑条本身的胖瘦（默认 20pt），嫌太细不好点中就调大；「触控宽度」是手指的热区范围（默认 44pt，比滑条宽才好命中，但不改变外观）。";
+        case 1: return @"快捷键经私有 IOHID 接口在后台监听（只观测、不拦截，不影响按键在原 App 里的功能）。默认用 ⌥ 组合（⌥++ / ⌥+-），因为 ⌘++ 在 Safari 等 App 里是放大页面，两者会同时生效；若 ⌥ 组合在你的 App 里也有冲突，可改 ⌃ 或 ⇧。地球键(🌐)是系统保留键，公开途径无法捕获，因此提供 ⌘/⌥/⌃/⇧ 选择。退到后台后仍响应快捷键需保持「后台保活」开启；重启 iPad 后需重新打开一次本应用。";
         case 2: return @"若测试无效，请切换音量类别（部分机型的媒体音量与铃声音量是分开的）。";
         default: return @"重启 iPad 后需要重新打开一次本应用，悬浮条才会出现。";
     }
@@ -148,8 +149,9 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
             case 3: return [self sliderCellWithTitle:@"长度" tag:EVRowLength value:[EVSettings shared].trackLength min:80 max:320 unit:@"pt" in:tableView];
             case 4: return [self sliderCellWithTitle:@"不透明度" tag:EVRowAlpha value:[EVSettings shared].trackAlpha min:0.05 max:1.0 unit:@"" in:tableView];
             case 5: return [self sliderCellWithTitle:@"触控宽度" tag:EVRowTouchWidth value:[EVSettings shared].touchWidth min:26 max:120 unit:@"pt" in:tableView];
-            case 6: return [self switchCellWithTitle:@"锁定位置" tag:EVRowLock on:[EVSettings shared].lockPosition in:tableView];
-            case 7: return [self segmentCellWithTitle:@"触摸模式" items:@[@"小窗", @"全屏"] tag:EVRowTouchMode selected:([EVSettings shared].smallWindowMode ? 0 : 1) in:tableView];
+            case 6: return [self sliderCellWithTitle:@"轨道粗细" tag:EVRowThickness value:[EVSettings shared].trackThickness min:10 max:44 unit:@"pt" in:tableView];
+            case 7: return [self switchCellWithTitle:@"锁定位置" tag:EVRowLock on:[EVSettings shared].lockPosition in:tableView];
+            case 8: return [self segmentCellWithTitle:@"触摸模式" items:@[@"小窗", @"全屏"] tag:EVRowTouchMode selected:([EVSettings shared].smallWindowMode ? 0 : 1) in:tableView];
         }
     }
     else if (indexPath.section == 1) {
@@ -328,6 +330,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
         case EVRowLength:     [EVSettings shared].trackLength = slider.value; break;
         case EVRowAlpha:      [EVSettings shared].trackAlpha = slider.value; break;
         case EVRowTouchWidth: [EVSettings shared].touchWidth = slider.value; break;
+        case EVRowThickness:  [EVSettings shared].trackThickness = slider.value; break;
         case EVRowKBStep:     [EVSettings shared].kbStep = slider.value; break;
     }
     self.suppressReload = NO;
@@ -362,6 +365,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
         [EVSettings shared].trackLength = 180.0;
         [EVSettings shared].trackAlpha = 0.55;
         [EVSettings shared].touchWidth = 44.0;
+        [EVSettings shared].trackThickness = 20.0;
         self.suppressReload = NO;
         [self reloadQuietly];
     }

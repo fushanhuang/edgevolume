@@ -40,8 +40,10 @@ typedef NS_ENUM(NSInteger, EVKBKey) {
 @property (nonatomic, assign) CGFloat centerYFraction;
 /// 轨道长度（pt）
 @property (nonatomic, assign) CGFloat trackLength;
-/// 触控宽度（pt）：把手的触摸热区宽度。可见轨道只有 10pt，
-/// 热区加宽后不影响外观，但手指更好命中（默认 44pt）
+/// 轨道粗细（pt）：可见滑条的视觉宽度，加粗后手指更容易点中（默认 20pt，10–44 可调）
+@property (nonatomic, assign) CGFloat trackThickness;
+/// 触控宽度（pt）：把手的触摸热区宽度。热区比可见轨道宽，手指更好命中、
+/// 不影响外观（默认 44pt，26–120 可调）
 @property (nonatomic, assign) CGFloat touchWidth;
 /// 整体不透明度 0.05 ~ 1.0
 @property (nonatomic, assign) CGFloat trackAlpha;
