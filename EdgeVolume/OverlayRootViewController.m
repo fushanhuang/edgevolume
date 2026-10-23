@@ -77,6 +77,11 @@
     self.handle.onMoveEnded = ^{
         [weakSelf finishMove];
     };
+    self.handle.onLongPress = ^{
+        // 长按滑条：紧急隐藏全部悬浮窗（打开 App 自动恢复）
+        AppDelegate *ad = (AppDelegate *)[UIApplication sharedApplication].delegate;
+        [ad setOverlayHidden:YES];
+    };
 
     [self applyOverlayLayoutAnimated:NO];
 }

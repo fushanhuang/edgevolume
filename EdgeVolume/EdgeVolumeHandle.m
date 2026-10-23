@@ -7,10 +7,12 @@
 @property (nonatomic, strong) UIView *fillView;
 @property (nonatomic, strong) UIView *gripView;
 @property (nonatomic, strong) UIPanGestureRecognizer *pan;
+@property (nonatomic, strong) UILongPressGestureRecognizer *longPress;
 @property (nonatomic, assign) float startVolume;
 @property (nonatomic, assign) CGPoint startPoint;
 @property (nonatomic, assign) BOOL moved;
 @property (nonatomic, assign) BOOL moveMode;
+@property (nonatomic, assign) BOOL longPressFired;
 @property (nonatomic, readwrite) BOOL interacting;
 @end
 
@@ -43,6 +45,12 @@
         _pan.maximumNumberOfTouches = 1;
         _pan.minimumNumberOfTouches = 1;
         [self addGestureRecognizer:_pan];
+
+        // 长按 = 紧急隐藏悬浮窗（万一悬浮窗显示异常，用户有办法收回控制权）
+        _longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+        _longPress.minimumPressDuration = 0.7;
+        _longPress.allowableMovement = 12.0;
+        [self addGestureRecognizer:_longPress];
 
         [self refreshAppearance];
     }
@@ -123,7 +131,9 @@
         default: {
             self.interacting = NO;
             [self refreshAppearance];
-            if (_moveMode) {
+            if (_longPressFired) {
+                _longPressFired = NO;   // 长按已触发隐藏，不再当作点击
+            } else if (_moveMode) {
                 if (self.onMoveEnded) self.onMoveEnded();
             } else if (!_moved) {
                 if (self.onTap) self.onTap();
@@ -132,6 +142,13 @@
             break;
         }
     }
+}
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)lp {
+    if (lp.state != UIGestureRecognizerStateBegan) return;
+    _longPressFired = YES;
+    _moveMode = NO;
+    if (self.onLongPress) self.onLongPress();
 }
 
 @end

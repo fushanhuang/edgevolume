@@ -15,6 +15,8 @@ typedef NS_ENUM(NSInteger, EVEdge) {
 
 /// 悬浮条总开关
 @property (nonatomic, assign) BOOL enabled;
+/// 全局悬浮窗总开关（关闭后 App 仅作为普通设置页运行，不创建悬浮场景）
+@property (nonatomic, assign) BOOL overlayEnabled;
 /// 贴靠边缘（左/右）
 @property (nonatomic, assign) EVEdge edge;
 /// 垂直位置（0=顶部 1=底部，相对可用区域）

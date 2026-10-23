@@ -14,6 +14,7 @@ NSString *const kEVSettingsChangedNotification = @"EVSettingsChangedNotification
 - (void)registerDefaults {
     NSDictionary *defs = @{
         @"EVEnabled": @YES,
+        @"EVOverlayEnabled": @YES,
         @"EVEdge": @(EVEdgeRight),
         @"EVCenterYFraction": @(0.45),
         @"EVTrackLength": @(180.0),
@@ -30,6 +31,9 @@ NSString *const kEVSettingsChangedNotification = @"EVSettingsChangedNotification
 
 - (BOOL)enabled { return [[NSUserDefaults standardUserDefaults] boolForKey:@"EVEnabled"]; }
 - (void)setEnabled:(BOOL)v { [[NSUserDefaults standardUserDefaults] setBool:v forKey:@"EVEnabled"]; [self postChanged]; }
+
+- (BOOL)overlayEnabled { return [[NSUserDefaults standardUserDefaults] boolForKey:@"EVOverlayEnabled"]; }
+- (void)setOverlayEnabled:(BOOL)v { [[NSUserDefaults standardUserDefaults] setBool:v forKey:@"EVOverlayEnabled"]; [self postChanged]; }
 
 - (EVEdge)edge { return (EVEdge)[[NSUserDefaults standardUserDefaults] integerForKey:@"EVEdge"]; }
 - (void)setEdge:(EVEdge)v { [[NSUserDefaults standardUserDefaults] setInteger:v forKey:@"EVEdge"]; [self postChanged]; }

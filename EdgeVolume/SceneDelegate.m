@@ -3,8 +3,10 @@
 #import "OverlayRootViewController.h"
 #import "OverlayContainerView.h"
 #import "PassThroughWindow.h"
+#import "EdgeTouchWindow.h"
 #import "SettingsViewController.h"
 #import "UIKitPrivate.h"
+#import "EVSettings.h"
 #import "VolumeController.h"
 
 NSString *const kEVFloatingWindowDidRotateNotification = @"EVFloatingWindowDidRotateNotification";
@@ -24,15 +26,15 @@ NSString *const kEVFloatingWindowDidRotateNotification = @"EVFloatingWindowDidRo
     if ([ident isEqualToString:ad.touchSceneIdentifier]) {
         // ===== 全局可触摸悬浮场景（音量滑动条）=====
         UIWindow *placeholder = ad.overlayWindowIsTouch;
-        UIWindow *w = [[UIWindow alloc] initWithWindowScene:windowScene];
+        // EdgeTouchWindow：窗口内非滑条区域 hitTest 返回 nil，触摸穿透到下层
+        EdgeTouchWindow *w = [[EdgeTouchWindow alloc] initWithWindowScene:windowScene];
         w.backgroundColor = [UIColor clearColor];
         w.windowLevel = 10000;
         w.rootViewController = ad.overlayTouchRootVC;
-        w.frame = windowScene.coordinateSpace.bounds;
         self.window = w;
         ad.overlayWindowIsTouch = w;
         placeholder.hidden = YES;
-        [w setHidden:NO];
+        [w makeKeyAndVisible];   // 与参照实现一致：触摸悬浮窗持 key，保证接收触摸
         [ad markSceneConnected:ad.touchSceneIdentifier];
         NSLog(@"[EdgeVolume] touch overlay scene connected");
     }
@@ -43,11 +45,10 @@ NSString *const kEVFloatingWindowDidRotateNotification = @"EVFloatingWindowDidRo
         w.backgroundColor = [UIColor clearColor];
         w.windowLevel = 9999;
         w.rootViewController = ad.overlayPassRootVC;
-        w.frame = windowScene.coordinateSpace.bounds;
         self.window = w;
         ad.overlayWindowNoTouch = w;
         placeholder.hidden = YES;
-        [w setHidden:NO];
+        [w setHidden:NO];        // HUD 窗不抢 key
         [ad markSceneConnected:ad.passSceneIdentifier];
         NSLog(@"[EdgeVolume] pass-through overlay scene connected");
     }
@@ -61,6 +62,9 @@ NSString *const kEVFloatingWindowDidRotateNotification = @"EVFloatingWindowDidRo
         ad.window = self.window;
         [[VolumeController shared] ensureVolumeView];
     }
+
+    // 所有场景统一帧（与参照实现一致）
+    self.window.frame = windowScene.coordinateSpace.bounds;
 
     // 悬浮窗跟随设备旋转
     if ([ident isEqualToString:ad.touchSceneIdentifier] || [ident isEqualToString:ad.passSceneIdentifier]) {
@@ -88,6 +92,13 @@ NSString *const kEVFloatingWindowDidRotateNotification = @"EVFloatingWindowDidRo
 }
 
 - (void)sceneDidBecomeActive:(UIScene *)scene {
+    // 打开 App 时自动恢复被长按隐藏的悬浮窗
+    AppDelegate *ad = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    NSString *ident = scene.session.persistentIdentifier;
+    BOOL isOverlay = [ident isEqualToString:ad.touchSceneIdentifier] || [ident isEqualToString:ad.passSceneIdentifier];
+    if (!isOverlay && [EVSettings shared].overlayEnabled) {
+        [ad setOverlayHidden:NO];
+    }
 }
 
 - (void)sceneWillResignActive:(UIScene *)scene {

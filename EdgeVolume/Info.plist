@@ -75,10 +75,10 @@
 	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
-		<!-- 必须为 true：否则 FrontBoard 注入的悬浮 FBScene 无法作为
-		     UIScene 连接，SceneDelegate 收不到悬浮场景会话 -->
+		<!-- 与社区验证过的实现（SysView）保持一致：false。
+		     FrontBoard 注入的悬浮 FBScene 仍会经 SceneDelegate 连接 -->
 		<key>UIApplicationSupportsMultipleScenes</key>
-		<true/>
+		<false/>
 		<key>UISceneConfigurations</key>
 		<dict>
 			<key>UIWindowSceneSessionRoleApplication</key>

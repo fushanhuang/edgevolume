@@ -17,6 +17,8 @@
 @property (nonatomic, copy) void (^onMoveEnded)(void);
 /// 单击
 @property (nonatomic, copy) void (^onTap)(void);
+/// 长按（紧急隐藏悬浮窗的逃生开关）
+@property (nonatomic, copy) void (^onLongPress)(void);
 
 /// 刷新外观（透明度/高亮）
 - (void)refreshAppearance;

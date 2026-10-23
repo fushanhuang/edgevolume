@@ -5,6 +5,7 @@
 
 typedef NS_ENUM(NSInteger, EVRowTag) {
     EVRowEnabled = 100,
+    EVRowOverlay,
     EVRowEdge,
     EVRowLength,
     EVRowAlpha,
@@ -81,7 +82,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
-        case 0: return 6;
+        case 0: return 7;
         case 1: return 3;
         default: return 3;
     }
@@ -97,7 +98,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     switch (section) {
-        case 0: return @"上下滑动滑动条 = 调节音量；左右拖动 = 移动位置；单击 = 显示当前音量。";
+        case 0: return @"上下滑动滑动条 = 调节音量；左右拖动 = 移动位置；单击 = 显示当前音量；长按 = 紧急隐藏悬浮窗。";
         case 1: return @"若测试无效，请切换音量类别（部分机型的媒体音量与铃声音量是分开的）。";
         default: return @"重启 iPad 后需要重新打开一次本应用，悬浮条才会出现。";
     }
@@ -106,12 +107,13 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         switch (indexPath.row) {
-            case 0: return [self switchCellWithTitle:@"启用悬浮条" tag:EVRowEnabled on:[EVSettings shared].enabled in:tableView];
-            case 1: return [self segmentCellWithTitle:@"贴边位置" items:@[@"左", @"右"] tag:EVRowEdge selected:[EVSettings shared].edge in:tableView];
-            case 2: return [self sliderCellWithTitle:@"长度" tag:EVRowLength value:[EVSettings shared].trackLength min:80 max:320 unit:@"pt" in:tableView];
-            case 3: return [self sliderCellWithTitle:@"不透明度" tag:EVRowAlpha value:[EVSettings shared].trackAlpha min:0.05 max:1.0 unit:@"" in:tableView];
-            case 4: return [self switchCellWithTitle:@"锁定位置" tag:EVRowLock on:[EVSettings shared].lockPosition in:tableView];
-            case 5: return [self segmentCellWithTitle:@"触摸模式" items:@[@"小窗", @"全屏"] tag:EVRowTouchMode selected:([EVSettings shared].smallWindowMode ? 0 : 1) in:tableView];
+            case 0: return [self switchCellWithTitle:@"全局悬浮窗" tag:EVRowOverlay on:[EVSettings shared].overlayEnabled in:tableView];
+            case 1: return [self switchCellWithTitle:@"启用悬浮条" tag:EVRowEnabled on:[EVSettings shared].enabled in:tableView];
+            case 2: return [self segmentCellWithTitle:@"贴边位置" items:@[@"左", @"右"] tag:EVRowEdge selected:[EVSettings shared].edge in:tableView];
+            case 3: return [self sliderCellWithTitle:@"长度" tag:EVRowLength value:[EVSettings shared].trackLength min:80 max:320 unit:@"pt" in:tableView];
+            case 4: return [self sliderCellWithTitle:@"不透明度" tag:EVRowAlpha value:[EVSettings shared].trackAlpha min:0.05 max:1.0 unit:@"" in:tableView];
+            case 5: return [self switchCellWithTitle:@"锁定位置" tag:EVRowLock on:[EVSettings shared].lockPosition in:tableView];
+            case 6: return [self segmentCellWithTitle:@"触摸模式" items:@[@"小窗", @"全屏"] tag:EVRowTouchMode selected:([EVSettings shared].smallWindowMode ? 0 : 1) in:tableView];
         }
     }
     else if (indexPath.section == 1) {
@@ -232,6 +234,15 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 - (void)switchChanged:(UISwitch *)sw {
     self.suppressReload = YES;
     switch (sw.tag) {
+        case EVRowOverlay:  [EVSettings shared].overlayEnabled = sw.on;
+                            if (sw.on) {
+                                AppDelegate *ad = (AppDelegate *)[UIApplication sharedApplication].delegate;
+                                [ad startFloatingOverlay];
+                                [ad setOverlayHidden:NO];   // 已初始化过时取消隐藏
+                            } else {
+                                [(AppDelegate *)[UIApplication sharedApplication].delegate setOverlayHidden:YES];
+                            }
+                            break;
         case EVRowEnabled:   [EVSettings shared].enabled = sw.on; break;
         case EVRowLock:      [EVSettings shared].lockPosition = sw.on; break;
         case EVRowKeepAlive: [EVSettings shared].keepAlive = sw.on;
@@ -298,12 +309,20 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
     AppDelegate *ad = (AppDelegate *)[UIApplication sharedApplication].delegate;
     NSMutableArray *parts = [NSMutableArray array];
     if ([ad isKindOfClass:NSClassFromString(@"AppDelegate")]) {
+        [parts addObject:ad.shellRegistered ? @"系统Shell:已注册" : @"系统Shell:未注册"];
         [parts addObject:ad.touchSceneConnected ? @"悬浮场景:已连接" : @"悬浮场景:未连接"];
     }
     switch ([VolumeController shared].backend) {
         case EVVolumeBackendAVSystemController: [parts addObject:@"音量API:私有接口"]; break;
         case EVVolumeBackendMPVolumeView:       [parts addObject:@"音量API:MPVolumeView兜底"]; break;
         default:                                [parts addObject:@"音量API:检测中"]; break;
+    }
+    NSArray<NSString *> *log = ad.eventLog;
+    if (log.count > 0) {
+        [parts addObject:@"—— 事件日志 ——"];
+        for (NSInteger i = log.count - 1; i >= 0 && i >= (NSInteger)log.count - 6; i--) {
+            [parts addObject:log[i]];
+        }
     }
     return [parts componentsJoinedByString:@"\n"];
 }
