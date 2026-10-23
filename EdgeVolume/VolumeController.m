@@ -147,7 +147,7 @@ NSString *const kEVSystemVolumeChangedNotification = @"EVSystemVolumeChangedNoti
                         change:(NSDictionary<NSKeyValueChangeKey, id> *)change
                        context:(void *)context {
     if (![keyPath isEqualToString:@"outputVolume"]) return;
-    float v = [[change objectForKey:NSKeyValueObservingNewValue] floatValue];
+    float v = [[change objectForKey:NSKeyValueChangeNewKey] floatValue];
     if (self.applying) {
         self.volume = v;
         return;
