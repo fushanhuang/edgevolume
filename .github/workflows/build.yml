@@ -23,6 +23,8 @@ jobs:
           xcodegen generate
           echo "===== 生成的工程文件 ====="
           find EdgeVolume.xcodeproj -type f | sort
+          echo "===== objectVersion ====="
+          grep -o 'objectVersion = [0-9]*' EdgeVolume.xcodeproj/project.pbxproj | head -1
 
       # 诊断：plutil 只能 lint 标准 plist（XML/binary），
       # pbxproj 是 OpenStep 格式、scheme/workspace 是 Xcode 私有 plist，
@@ -38,10 +40,8 @@ jobs:
           printf 'backslash: %s\n' "$(grep -c '\\' EdgeVolume.xcodeproj/project.pbxproj || true)"
           printf 'CR: %s\n' "$(grep -c $'\r' EdgeVolume.xcodeproj/project.pbxproj || true)"
 
-      # 这一步是 pbxproj 能否被 Xcode 解析的权威判据
-      - name: Show schemes
-        run: xcodebuild -project EdgeVolume.xcodeproj -list
-
+      # 工程解析验证（含 objectVersion 自动降级垫片）、编译、
+      # ldid 签名、打包 tipa 全部在 build-ipa.sh 内完成
       - name: Build IPA
         run: |
           chmod +x build-ipa.sh

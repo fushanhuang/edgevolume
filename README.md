@@ -59,6 +59,8 @@
 
 > 工程文件由 **XcodeGen** 从 `project.yml` 生成（`EdgeVolume.xcodeproj` 不纳入版本管理）。
 > 需要安装两个命令行工具：`xcodegen`（生成工程）和 `ldid`（写私有 entitlements）。
+> Xcode 版本要求 **15.4 及以上**；若本机 Xcode 较旧，`build-ipa.sh` 会自动把工程
+> 的 `objectVersion` 逐级降级（77→60→56）后重试，无需手动干预。
 
 ### 方式 A：Mac 本地一键构建（推荐）
 

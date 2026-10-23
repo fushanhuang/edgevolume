@@ -3,7 +3,7 @@
 # EdgeVolume 一键构建 + ldid 签名 + 打包 tipa（供巨魔安装）
 #
 # 依赖：
-#   - Xcode（macOS App Store 安装）
+#   - Xcode（macOS App Store 安装，15.4 及以上均可）
 #   - xcodegen（brew install xcodegen）—— 由 project.yml 生成工程
 #   - ldid（brew install ldid）—— 把私有 entitlements 写进 Mach-O
 #
@@ -14,6 +14,38 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 ENT_PLIST="$(pwd)/EdgeVolume/entitlements.plist"
+PBXPROJ="EdgeVolume.xcodeproj/project.pbxproj"
+
+# ------------------------------------------------------------
+# 兼容垫片：XcodeGen 新版生成的是新版 Xcode 工程格式
+# （objectVersion 77 = Xcode 26 / 60 = Xcode 16 / 56 = Xcode 15）。
+# 若本机 Xcode 较旧无法解析，自动逐级降级 objectVersion 重试。
+# ------------------------------------------------------------
+ensure_project_readable() {
+  if xcodebuild -project EdgeVolume.xcodeproj -list >/dev/null 2>&1; then
+    return 0
+  fi
+  local msg
+  msg="$(xcodebuild -project EdgeVolume.xcodeproj -list 2>&1 || true)"
+  if ! printf '%s' "$msg" | grep -q "future Xcode project file format"; then
+    echo "错误：Xcode 无法解析工程，且不是版本格式问题：" >&2
+    printf '%s\n' "$msg" >&2
+    exit 1
+  fi
+  echo "    当前 Xcode 版本较旧，尝试降级 objectVersion"
+  local ver
+  for ver in 60 56; do
+    sed -i.bak "s/objectVersion = [0-9]*;/objectVersion = $ver;/" "$PBXPROJ"
+    rm -f "$PBXPROJ.bak"
+    echo "    尝试 objectVersion = $ver"
+    if xcodebuild -project EdgeVolume.xcodeproj -list >/dev/null 2>&1; then
+      echo "    objectVersion = $ver 可被当前 Xcode 解析"
+      return 0
+    fi
+  done
+  echo "错误：降级 objectVersion 后 Xcode 仍无法解析工程" >&2
+  exit 1
+}
 
 echo "==> [1/5] 用 XcodeGen 生成 Xcode 工程"
 if ! command -v xcodegen >/dev/null 2>&1; then
@@ -28,7 +60,8 @@ if ! command -v xcodegen >/dev/null 2>&1; then
 fi
 xcodegen --version
 xcodegen generate
-echo "    已生成 EdgeVolume.xcodeproj"
+echo "    已生成 EdgeVolume.xcodeproj（objectVersion: $(grep -o 'objectVersion = [0-9]*' "$PBXPROJ" | head -1 | grep -o '[0-9]*')）"
+ensure_project_readable
 
 echo "==> [2/5] 编译（不经过 Apple 签名，巨魔会重新签名）"
 xcodebuild -project EdgeVolume.xcodeproj \
