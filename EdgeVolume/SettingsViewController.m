@@ -2,6 +2,7 @@
 #import "EVSettings.h"
 #import "VolumeController.h"
 #import "AppDelegate.h"
+#import "KeyboardShortcutController.h"
 
 typedef NS_ENUM(NSInteger, EVRowTag) {
     EVRowEnabled = 100,
@@ -12,6 +13,14 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
     EVRowTouchWidth,
     EVRowLock,
     EVRowTouchMode,
+    EVRowKBEnabled,
+    EVRowKBUpMod,
+    EVRowKBUpKey,
+    EVRowKBDownMod,
+    EVRowKBDownKey,
+    EVRowKBStep,
+    EVRowKBDiagnostic,
+    EVRowKBStatus,
     EVRowCategory,
     EVRowVolumeNow,
     EVRowTestVolume,
@@ -46,12 +55,34 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
     NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
     [nc addObserver:self selector:@selector(reloadQuietly) name:kEVSettingsChangedNotification object:nil];
     [nc addObserver:self selector:@selector(reloadQuietly) name:kEVOverlayStatusChangedNotification object:nil];
+    [nc addObserver:self selector:@selector(reloadQuietly) name:kEVKeyboardLogChangedNotification object:nil];
     [nc addObserver:self selector:@selector(backendChanged) name:kEVVolumeBackendChangedNotification object:nil];
     [nc addObserver:self selector:@selector(volumeChanged) name:kEVSystemVolumeChangedNotification object:nil];
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    // 成为第一响应者，保证前台 UIKeyCommand 快捷键能分发到本页
+    [self becomeFirstResponder];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [self resignFirstResponder];
+    [super viewWillDisappear:animated];
+}
+
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+/// 前台快捷键：与后台 IOHID 监听二选一（KeyboardShortcutController 内部按
+/// App 状态分流，不会重复触发）
+- (NSArray<UIKeyCommand *> *)keyCommands {
+    return [[KeyboardShortcutController shared] foregroundKeyCommands];
 }
 
 #pragma mark - 通知
@@ -70,7 +101,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 - (void)volumeChanged {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (!self.tableView) return;
-        NSIndexPath *ip = [NSIndexPath indexPathForRow:1 inSection:1];
+        NSIndexPath *ip = [NSIndexPath indexPathForRow:1 inSection:2];
         [self.tableView reloadRowsAtIndexPaths:@[ip] withRowAnimation:UITableViewRowAnimationNone];
     });
 }
@@ -78,13 +109,14 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
         case 0: return 8;
-        case 1: return 3;
+        case 1: return 8;
+        case 2: return 3;
         default: return 3;
     }
 }
@@ -92,7 +124,8 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     switch (section) {
         case 0: return @"悬浮条";
-        case 1: return @"音量";
+        case 1: return @"键盘快捷键";
+        case 2: return @"音量";
         default: return @"高级";
     }
 }
@@ -100,7 +133,8 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     switch (section) {
         case 0: return @"上下滑动滑动条 = 调节音量；左右拖动 = 移动位置；单击 = 显示当前音量；长按 = 紧急隐藏悬浮窗。触控热区比可见滑条宽（默认 44pt），可在上方调整。";
-        case 1: return @"若测试无效，请切换音量类别（部分机型的媒体音量与铃声音量是分开的）。";
+        case 1: return @"快捷键经私有 IOHID 接口在后台监听（只观测、不拦截，不影响按键在原 App 里的功能）。若同一组合在前台 App 有自带功能（如 Safari 的 ⌘++ 是放大页面），两者会同时生效，可改用 ⌥ 或 ⌃ 避免。地球键(🌐)是系统保留键，无法被 App 捕获，因此提供 ⌘/⌥/⌃/⇧ 选择。退到后台后仍响应快捷键需保持「后台保活」开启；重启 iPad 后需重新打开一次本应用。";
+        case 2: return @"若测试无效，请切换音量类别（部分机型的媒体音量与铃声音量是分开的）。";
         default: return @"重启 iPad 后需要重新打开一次本应用，悬浮条才会出现。";
     }
 }
@@ -119,6 +153,25 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
         }
     }
     else if (indexPath.section == 1) {
+        EVSettings *s = [EVSettings shared];
+        switch (indexPath.row) {
+            case 0: return [self switchCellWithTitle:@"启用键盘快捷键" tag:EVRowKBEnabled on:s.kbEnabled in:tableView];
+            case 1: return [self segmentCellWithTitle:@"增大－修饰键" items:@[@"无", @"⌘", @"⌥", @"⌃", @"⇧"] tag:EVRowKBUpMod selected:s.kbUpModifier in:tableView];
+            case 2: return [self segmentCellWithTitle:@"增大－主键" items:@[@"+", @"-", @"↑", @"↓"] tag:EVRowKBUpKey selected:s.kbUpKey in:tableView];
+            case 3: return [self segmentCellWithTitle:@"减小－修饰键" items:@[@"无", @"⌘", @"⌥", @"⌃", @"⇧"] tag:EVRowKBDownMod selected:s.kbDownModifier in:tableView];
+            case 4: return [self segmentCellWithTitle:@"减小－主键" items:@[@"+", @"-", @"↑", @"↓"] tag:EVRowKBDownKey selected:s.kbDownKey in:tableView];
+            case 5: return [self sliderCellWithTitle:@"每次步进" tag:EVRowKBStep value:s.kbStep min:0.02 max:0.25 unit:@"" in:tableView];
+            case 6: return [self switchCellWithTitle:@"诊断：记录所有按键" tag:EVRowKBDiagnostic on:s.kbDiagnostic in:tableView];
+            case 7: {
+                UITableViewCell *cell = [self textCellWithTitle:@"捕获状态" detail:[self keyboardStatusText] in:tableView];
+                cell.textLabel.numberOfLines = 0;
+                cell.detailTextLabel.numberOfLines = 0;
+                cell.detailTextLabel.font = [UIFont systemFontOfSize:12.0];
+                return cell;
+            }
+        }
+    }
+    else if (indexPath.section == 2) {
         switch (indexPath.row) {
             case 0: return [self segmentCellWithTitle:@"音量类别" items:@[@"媒体", @"铃声"] tag:EVRowCategory selected:[EVSettings shared].volumeCategory in:tableView];
             case 1: {
@@ -247,6 +300,8 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
                             break;
         case EVRowEnabled:   [EVSettings shared].enabled = sw.on; break;
         case EVRowLock:      [EVSettings shared].lockPosition = sw.on; break;
+        case EVRowKBEnabled: [EVSettings shared].kbEnabled = sw.on; break;
+        case EVRowKBDiagnostic: [EVSettings shared].kbDiagnostic = sw.on; break;
         case EVRowKeepAlive: [EVSettings shared].keepAlive = sw.on;
                            [[VolumeController shared] setKeepAliveEnabled:sw.on]; break;
     }
@@ -259,6 +314,10 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
         case EVRowEdge:      [EVSettings shared].edge = (EVEdge)seg.selectedSegmentIndex; break;
         case EVRowTouchMode: [EVSettings shared].smallWindowMode = (seg.selectedSegmentIndex == 0); break;
         case EVRowCategory:  [EVSettings shared].volumeCategory = seg.selectedSegmentIndex; break;
+        case EVRowKBUpMod:     [EVSettings shared].kbUpModifier = (EVKBModifier)seg.selectedSegmentIndex; break;
+        case EVRowKBUpKey:     [EVSettings shared].kbUpKey = (EVKBKey)seg.selectedSegmentIndex; break;
+        case EVRowKBDownMod:   [EVSettings shared].kbDownModifier = (EVKBModifier)seg.selectedSegmentIndex; break;
+        case EVRowKBDownKey:   [EVSettings shared].kbDownKey = (EVKBKey)seg.selectedSegmentIndex; break;
     }
     self.suppressReload = NO;
 }
@@ -269,12 +328,13 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
         case EVRowLength:     [EVSettings shared].trackLength = slider.value; break;
         case EVRowAlpha:      [EVSettings shared].trackAlpha = slider.value; break;
         case EVRowTouchWidth: [EVSettings shared].touchWidth = slider.value; break;
+        case EVRowKBStep:     [EVSettings shared].kbStep = slider.value; break;
     }
     self.suppressReload = NO;
     // 只刷新数值文本，避免打断拖动
     for (UITableViewCell *cell in [self.tableView visibleCells]) {
         if (cell.accessoryView == slider && [cell isKindOfClass:[UITableViewCell class]]) {
-            if (slider.tag == EVRowAlpha) {
+            if (slider.tag == EVRowAlpha || slider.tag == EVRowKBStep) {
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%.0f%%", slider.value * 100.0];
             } else {
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%.0fpt", slider.value];
@@ -331,6 +391,38 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
         for (NSInteger i = log.count - 1; i >= 0 && i >= (NSInteger)log.count - 6; i--) {
             [parts addObject:log[i]];
         }
+    }
+    return [parts componentsJoinedByString:@"\n"];
+}
+
+/// 键盘快捷键区的状态行：私有接口可用性 + 当前组合 + 最近捕获的按键
+- (NSString *)keyboardStatusText {
+    EVSettings *s = [EVSettings shared];
+    KeyboardShortcutController *kb = [KeyboardShortcutController shared];
+    NSMutableArray *parts = [NSMutableArray array];
+
+    if (!s.kbEnabled) {
+        [parts addObject:@"已关闭（开启后生效）"];
+    } else if (kb.hidAvailable) {
+        [parts addObject:[NSString stringWithFormat:@"后台监听中（%@ 客户端）", kb.clientTypeDesc]];
+    } else {
+        [parts addObject:@"后台监听不可用（私有接口受限）；本 App 前台内快捷键仍可用"];
+    }
+
+    [parts addObject:[NSString stringWithFormat:@"当前组合：增大 %@+%@  减小 %@+%@",
+                      [KeyboardShortcutController displayNameForModifier:s.kbUpModifier],
+                      [KeyboardShortcutController displayNameForKey:s.kbUpKey],
+                      [KeyboardShortcutController displayNameForModifier:s.kbDownModifier],
+                      [KeyboardShortcutController displayNameForKey:s.kbDownKey]]];
+
+    NSArray<NSString *> *log = kb.eventLog;
+    if (log.count > 0) {
+        [parts addObject:@"—— 最近捕获 ——"];
+        for (NSInteger i = log.count - 1; i >= 0 && i >= (NSInteger)log.count - 5; i--) {
+            [parts addObject:log[i]];
+        }
+    } else {
+        [parts addObject:@"—— 最近捕获 ——（尚无记录，按几下键盘试试）"];
     }
     return [parts componentsJoinedByString:@"\n"];
 }

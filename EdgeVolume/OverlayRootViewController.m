@@ -3,6 +3,7 @@
 #import "EVSettings.h"
 #import "VolumeController.h"
 #import "AppDelegate.h"
+#import "KeyboardShortcutController.h"
 
 // 注意：kEVFloatingWindowDidRotateNotification 的定义在 SceneDelegate.m，
 //       kEVSystemVolumeChangedNotification 的定义在 VolumeController.m，
@@ -46,6 +47,21 @@
     [nc addObserver:self selector:@selector(settingsChanged:) name:kEVSettingsChangedNotification object:nil];
     [nc addObserver:self selector:@selector(windowDidRotate:) name:kEVFloatingWindowDidRotateNotification object:nil];
     [nc addObserver:self selector:@selector(systemVolumeChanged:) name:kEVSystemVolumeChangedNotification object:nil];
+    [nc addObserver:self selector:@selector(keyboardVolumeAdjusted:) name:kEVKeyboardVolumeAdjustedNotification object:nil];
+}
+
+/// 硬件键盘快捷键触发：同步滑条位置并浮现 HUD（后台时同样有效）
+- (void)keyboardVolumeAdjusted:(NSNotification *)note {
+    if (self.mode != OverlayModeTouch) return;
+    float v = [note.userInfo[@"volume"] floatValue];
+    self.handle.volume = v;
+    [self showHUDForVolume:v];
+}
+
+/// 前台快捷键（UIKeyCommand）：App 处于前台时由 UIKit 分发到这里，
+/// 后台路径由 KeyboardShortcutController 的 IOHID 监听负责
+- (NSArray<UIKeyCommand *> *)keyCommands {
+    return [[KeyboardShortcutController shared] foregroundKeyCommands];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

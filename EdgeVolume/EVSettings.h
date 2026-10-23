@@ -5,6 +5,23 @@ typedef NS_ENUM(NSInteger, EVEdge) {
     EVEdgeRight = 1
 };
 
+/// 快捷键修饰键
+typedef NS_ENUM(NSInteger, EVKBModifier) {
+    EVKBModifierNone = 0,    // 无修饰键
+    EVKBModifierCommand,     // ⌘
+    EVKBModifierOption,      // ⌥
+    EVKBModifierControl,     // ⌃
+    EVKBModifierShift        // ⇧
+};
+
+/// 快捷键主键
+typedef NS_ENUM(NSInteger, EVKBKey) {
+    EVKBKeyPlus = 0,         // +（即 = 键，HID usage 0x2E）
+    EVKBKeyMinus,            // -（HID usage 0x2D）
+    EVKBKeyUpArrow,          // ↑（HID usage 0x52）
+    EVKBKeyDownArrow         // ↓（HID usage 0x51）
+};
+
 /// 全局偏好设置（NSUserDefaults 封装）
 @interface EVSettings : NSObject
 
@@ -36,6 +53,21 @@ typedef NS_ENUM(NSInteger, EVEdge) {
 @property (nonatomic, assign) BOOL keepAlive;
 /// 音量类别：0=媒体音量(Audio/Video) 1=铃声音量(Ringtone)
 @property (nonatomic, assign) NSInteger volumeCategory;
+
+#pragma mark - 键盘快捷键
+
+/// 键盘快捷键总开关
+@property (nonatomic, assign) BOOL kbEnabled;
+/// 增大音量组合：修饰键 / 主键
+@property (nonatomic, assign) EVKBModifier kbUpModifier;
+@property (nonatomic, assign) EVKBKey kbUpKey;
+/// 减小音量组合：修饰键 / 主键
+@property (nonatomic, assign) EVKBModifier kbDownModifier;
+@property (nonatomic, assign) EVKBKey kbDownKey;
+/// 每次按键的音量步进 0.02 ~ 0.25
+@property (nonatomic, assign) CGFloat kbStep;
+/// 诊断模式：记录所有捕获到的按键事件（设置页可见）
+@property (nonatomic, assign) BOOL kbDiagnostic;
 
 - (NSString *)volumeCategoryString;
 

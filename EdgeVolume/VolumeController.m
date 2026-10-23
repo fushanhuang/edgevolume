@@ -64,6 +64,11 @@ NSString *const kEVSystemVolumeChangedNotification = @"EVSystemVolumeChangedNoti
 
     if (done) {
         self.volume = v;
+        // 广播一次，让悬浮条/设置页同步刷新。
+        // （KVO 回调里有 applying 抑制，自身路径不会重复收到。）
+        [[NSNotificationCenter defaultCenter] postNotificationName:kEVSystemVolumeChangedNotification
+                                                            object:nil
+                                                          userInfo:@{@"volume": @(v)}];
     }
 }
 

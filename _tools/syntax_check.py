@@ -4,7 +4,11 @@ files = [
  'EdgeVolume/AppDelegate.h','EdgeVolume/AppDelegate.m','EdgeVolume/SceneDelegate.m',
  'EdgeVolume/EdgeTouchWindow.m','EdgeVolume/PassThroughWindow.m',
  'EdgeVolume/OverlayRootViewController.m','EdgeVolume/SettingsViewController.m',
- 'EdgeVolume/Info.plist'
+ 'EdgeVolume/KeyboardShortcutController.h','EdgeVolume/KeyboardShortcutController.m',
+ 'EdgeVolume/EVSettings.h','EdgeVolume/EVSettings.m',
+ 'EdgeVolume/VolumeController.h','EdgeVolume/VolumeController.m',
+ 'EdgeVolume/OverlayContainerView.m','EdgeVolume/EdgeVolumeHandle.m',
+ 'EdgeVolume/Info.plist','README.md','project.yml'
 ]
 ok = True
 for f in files:
