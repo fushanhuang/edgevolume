@@ -94,7 +94,8 @@
 - (CGRect)targetHandleFrameInScreen {
     EVSettings *s = [EVSettings shared];
     CGRect bounds = [self floatingScreenBounds];
-    CGFloat w = 26.0;
+    // 把手宽度 = 触控热区宽度（可见轨道始终是其中 10pt，居中显示）
+    CGFloat w = fmax(26.0, s.touchWidth);
     CGFloat h = s.trackLength;
     CGFloat sideMargin = 6.0;
     CGFloat x = (s.edge == EVEdgeRight) ? CGRectGetWidth(bounds) - w - sideMargin : sideMargin;

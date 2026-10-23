@@ -18,6 +18,7 @@ NSString *const kEVSettingsChangedNotification = @"EVSettingsChangedNotification
         @"EVEdge": @(EVEdgeRight),
         @"EVCenterYFraction": @(0.45),
         @"EVTrackLength": @(180.0),
+        @"EVTouchWidth": @(44.0),
         @"EVTrackAlpha": @(0.55),
         @"EVLockPosition": @NO,
         @"EVSmallWindowMode": @YES,
@@ -49,6 +50,13 @@ NSString *const kEVSettingsChangedNotification = @"EVSettingsChangedNotification
 - (void)setTrackLength:(CGFloat)v {
     v = fmax(80.0, fmin(320.0, v));
     [[NSUserDefaults standardUserDefaults] setDouble:v forKey:@"EVTrackLength"];
+    [self postChanged];
+}
+
+- (CGFloat)touchWidth { return [[NSUserDefaults standardUserDefaults] doubleForKey:@"EVTouchWidth"]; }
+- (void)setTouchWidth:(CGFloat)v {
+    v = fmax(26.0, fmin(120.0, v));
+    [[NSUserDefaults standardUserDefaults] setDouble:v forKey:@"EVTouchWidth"];
     [self postChanged];
 }
 

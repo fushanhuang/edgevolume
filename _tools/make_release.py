@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""创建 GitHub Release 并上传 EdgeVolume.tipa"""
+"""创建 GitHub Release 并上传 EdgeVolume.tipa
+用法: python make_release.py [版本号，默认 v1.0.3]
+"""
 import json
 import subprocess
 import sys
 import os
 
 REPO = "fushanhuang/edgevolume"
-TAG = "v1.0.2"
+TAG = sys.argv[1] if len(sys.argv) > 1 else "v1.0.3"
 TIPA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "EdgeVolume.tipa")
 
 def get_token():
@@ -49,6 +51,7 @@ BODY = """## EdgeVolume 1.0.2 — iPad 边缘音量悬浮条（巨魔专用）
 1. 打开 App 全黑——悬浮场景窗口默认黑底，已强制透明
 2. 回桌面后悬浮条消失——开启多场景支持，让悬浮场景真正连接为常驻层
 3. 全屏触控干扰——新增触摸穿透窗口，除滑条区域外全部穿透到下层
+4. 触控区太窄不好按——触控热区加宽到默认 44pt（可见轨道仍是 10pt，外观不变），且热区宽度可在设置里 26–120pt 调节
 
 ### 自行构建
 每次 push 到 main 会自动云构建，产物在 Actions → Artifacts 下载。本地 macOS 构建：

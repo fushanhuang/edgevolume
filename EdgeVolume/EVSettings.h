@@ -23,6 +23,9 @@ typedef NS_ENUM(NSInteger, EVEdge) {
 @property (nonatomic, assign) CGFloat centerYFraction;
 /// 轨道长度（pt）
 @property (nonatomic, assign) CGFloat trackLength;
+/// 触控宽度（pt）：把手的触摸热区宽度。可见轨道只有 10pt，
+/// 热区加宽后不影响外观，但手指更好命中（默认 44pt）
+@property (nonatomic, assign) CGFloat touchWidth;
 /// 整体不透明度 0.05 ~ 1.0
 @property (nonatomic, assign) CGFloat trackAlpha;
 /// 锁定位置（禁止拖动移动）

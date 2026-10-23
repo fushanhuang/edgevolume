@@ -9,6 +9,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
     EVRowEdge,
     EVRowLength,
     EVRowAlpha,
+    EVRowTouchWidth,
     EVRowLock,
     EVRowTouchMode,
     EVRowCategory,
@@ -82,7 +83,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
-        case 0: return 7;
+        case 0: return 8;
         case 1: return 3;
         default: return 3;
     }
@@ -98,7 +99,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     switch (section) {
-        case 0: return @"上下滑动滑动条 = 调节音量；左右拖动 = 移动位置；单击 = 显示当前音量；长按 = 紧急隐藏悬浮窗。";
+        case 0: return @"上下滑动滑动条 = 调节音量；左右拖动 = 移动位置；单击 = 显示当前音量；长按 = 紧急隐藏悬浮窗。触控热区比可见滑条宽（默认 44pt），可在上方调整。";
         case 1: return @"若测试无效，请切换音量类别（部分机型的媒体音量与铃声音量是分开的）。";
         default: return @"重启 iPad 后需要重新打开一次本应用，悬浮条才会出现。";
     }
@@ -112,8 +113,9 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
             case 2: return [self segmentCellWithTitle:@"贴边位置" items:@[@"左", @"右"] tag:EVRowEdge selected:[EVSettings shared].edge in:tableView];
             case 3: return [self sliderCellWithTitle:@"长度" tag:EVRowLength value:[EVSettings shared].trackLength min:80 max:320 unit:@"pt" in:tableView];
             case 4: return [self sliderCellWithTitle:@"不透明度" tag:EVRowAlpha value:[EVSettings shared].trackAlpha min:0.05 max:1.0 unit:@"" in:tableView];
-            case 5: return [self switchCellWithTitle:@"锁定位置" tag:EVRowLock on:[EVSettings shared].lockPosition in:tableView];
-            case 6: return [self segmentCellWithTitle:@"触摸模式" items:@[@"小窗", @"全屏"] tag:EVRowTouchMode selected:([EVSettings shared].smallWindowMode ? 0 : 1) in:tableView];
+            case 5: return [self sliderCellWithTitle:@"触控宽度" tag:EVRowTouchWidth value:[EVSettings shared].touchWidth min:26 max:120 unit:@"pt" in:tableView];
+            case 6: return [self switchCellWithTitle:@"锁定位置" tag:EVRowLock on:[EVSettings shared].lockPosition in:tableView];
+            case 7: return [self segmentCellWithTitle:@"触摸模式" items:@[@"小窗", @"全屏"] tag:EVRowTouchMode selected:([EVSettings shared].smallWindowMode ? 0 : 1) in:tableView];
         }
     }
     else if (indexPath.section == 1) {
@@ -264,17 +266,18 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 - (void)sliderChanged:(UISlider *)slider {
     self.suppressReload = YES;
     switch (slider.tag) {
-        case EVRowLength: [EVSettings shared].trackLength = slider.value; break;
-        case EVRowAlpha:  [EVSettings shared].trackAlpha = slider.value; break;
+        case EVRowLength:     [EVSettings shared].trackLength = slider.value; break;
+        case EVRowAlpha:      [EVSettings shared].trackAlpha = slider.value; break;
+        case EVRowTouchWidth: [EVSettings shared].touchWidth = slider.value; break;
     }
     self.suppressReload = NO;
     // 只刷新数值文本，避免打断拖动
     for (UITableViewCell *cell in [self.tableView visibleCells]) {
         if (cell.accessoryView == slider && [cell isKindOfClass:[UITableViewCell class]]) {
-            if (slider.tag == EVRowLength) {
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%.0fpt", slider.value];
-            } else {
+            if (slider.tag == EVRowAlpha) {
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%.0f%%", slider.value * 100.0];
+            } else {
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%.0fpt", slider.value];
             }
         }
     }
@@ -298,6 +301,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
         [EVSettings shared].centerYFraction = 0.45;
         [EVSettings shared].trackLength = 180.0;
         [EVSettings shared].trackAlpha = 0.55;
+        [EVSettings shared].touchWidth = 44.0;
         self.suppressReload = NO;
         [self reloadQuietly];
     }
