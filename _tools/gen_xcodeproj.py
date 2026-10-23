@@ -95,13 +95,15 @@ def collect_sources():
     for p in sorted(SRC_DIR.rglob("*")):
         if not p.is_file():
             continue
-        rel = p.relative_to(SRC_DIR)
+        # 必须用 POSIX 正斜杠：Windows 下 str(Path) 会产出反斜杠，
+        # 而 pbxproj 的反斜杠是转义符，且 startswith("Private/") 会失效。
+        rel = p.relative_to(SRC_DIR).as_posix()
         if p.suffix == ".m":
-            sources.append(str(rel))
+            sources.append(rel)
         elif p.suffix == ".h":
-            headers.append(str(rel))
+            headers.append(rel)
         elif p.suffix == ".tbd":
-            tbds.append(str(rel))
+            tbds.append(rel)
     return sources, headers, tbds
 
 
@@ -299,6 +301,10 @@ def build_objects():
             "GCC_WARN_UNINITIALIZED_AUTOS": True,
             "GCC_WARN_UNUSED_FUNCTION": True,
             "GCC_WARN_UNUSED_VARIABLE": True,
+            # 源码用 #import "UIKitPrivate.h" / "AVSystemController.h" 引用
+            # EdgeVolume/Private/ 下的头文件，必须显式给出搜索路径
+            # （不能依赖 Xcode 自动把组路径加进搜索路径）。
+            "HEADER_SEARCH_PATHS": ["$(inherited)", "$(SRCROOT)/EdgeVolume/Private"],
             "INFOPLIST_FILE": "EdgeVolume/Info.plist",
             "IPHONEOS_DEPLOYMENT_TARGET": DEPLOYMENT_TARGET,
             "LD_RUNPATH_SEARCH_PATHS": ["$(inherited)", "@executable_path/Frameworks"],
@@ -662,6 +668,12 @@ def lint_pbxproj(path):
     def check(cond, msg):
         if not cond:
             problems.append(msg)
+
+    # 反斜杠是 pbxproj 的转义符，路径里出现它会让 Xcode 直接判定工程损坏。
+    # （Windows 上 pathlib 的 str() 会产出反斜杠，是最容易踩的坑。）
+    for m in re.finditer(r'^\s*(path|name)\s*=\s*(.+?);\s*$', text, re.M):
+        if "\\" in m.group(2):
+            problems.append("路径值含反斜杠（Xcode 会解析失败）: %s" % m.group(2))
 
     check(root["objectVersion"] == "56", "objectVersion 应为 56")
     objects = root["objects"]

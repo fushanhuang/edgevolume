@@ -82,17 +82,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		077F0BF3A0122F9A8668C72A /* AppleAccount.tbd */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = sourcecode.text-based-dylib-standard-file;
+				path = AppleAccount.tbd;
+				sourceTree = "<group>";
+			};
 		1B74CED6EC76DC41279FAF82 /* OverlayContainerView.m */ = {
 				isa = PBXFileReference;
 				fileEncoding = 4;
 				lastKnownFileType = sourcecode.c.objc;
 				path = OverlayContainerView.m;
-				sourceTree = "<group>";
-			};
-		1CE030C7526420B40FF88D98 /* Private\AppleAccount.tbd */ = {
-				isa = PBXFileReference;
-				lastKnownFileType = sourcecode.text-based-dylib-standard-file;
-				path = "Private\\AppleAccount.tbd";
 				sourceTree = "<group>";
 			};
 		244C250962B297053A3D97C5 /* Foundation.framework */ = {
@@ -123,6 +123,13 @@
 				path = EdgeVolume.app;
 				sourceTree = BUILT_PRODUCTS_DIR;
 			};
+		3DCE59EBDD4A1C033D161B50 /* UIKitPrivate.h */ = {
+				isa = PBXFileReference;
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = UIKitPrivate.h;
+				sourceTree = "<group>";
+			};
 		502D8CA907954D6DF5267961 /* EVSettings.h */ = {
 				isa = PBXFileReference;
 				fileEncoding = 4;
@@ -144,22 +151,24 @@
 				path = AppDelegate.m;
 				sourceTree = "<group>";
 			};
-		59B194DB965698943C91BDCA /* Private\FrontBoard.tbd */ = {
+		5515955D485FAE7494EAEAB9 /* AVSystemController.h */ = {
 				isa = PBXFileReference;
-				lastKnownFileType = sourcecode.text-based-dylib-standard-file;
-				path = "Private\\FrontBoard.tbd";
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = AVSystemController.h;
 				sourceTree = "<group>";
 			};
-		60A46369B2DE9EB9F11D79A9 /* Private\FrontBoardServices.tbd */ = {
+		57C517ACBC5CD376670F3F23 /* FBSOrientationUpdate.h */ = {
 				isa = PBXFileReference;
-				lastKnownFileType = sourcecode.text-based-dylib-standard-file;
-				path = "Private\\FrontBoardServices.tbd";
+				fileEncoding = 4;
+				lastKnownFileType = sourcecode.c.h;
+				path = FBSOrientationUpdate.h;
 				sourceTree = "<group>";
 			};
-		6213B4762B0C7DB2D94C037F /* Private\RunningBoardServices.tbd */ = {
+		675852DE3E71D1FAF2B98BDB /* FrontBoardServices.tbd */ = {
 				isa = PBXFileReference;
 				lastKnownFileType = sourcecode.text-based-dylib-standard-file;
-				path = "Private\\RunningBoardServices.tbd";
+				path = FrontBoardServices.tbd;
 				sourceTree = "<group>";
 			};
 		767CE5287468418A13868B72 /* VolumeHUDView.h */ = {
@@ -183,11 +192,11 @@
 				path = OverlayRootViewController.m;
 				sourceTree = "<group>";
 			};
-		8A044F95255BE728E6D9DE5D /* Private\FBSOrientationObserver.h */ = {
+		7AE3B5317A53569A6B3F672E /* FBSOrientationObserver.h */ = {
 				isa = PBXFileReference;
 				fileEncoding = 4;
 				lastKnownFileType = sourcecode.c.h;
-				path = "Private\\FBSOrientationObserver.h";
+				path = FBSOrientationObserver.h;
 				sourceTree = "<group>";
 			};
 		8D5BC8E1596643DF4F691FA6 /* SceneDelegate.m */ = {
@@ -232,13 +241,6 @@
 				path = VolumeController.h;
 				sourceTree = "<group>";
 			};
-		A4FF1209F50AF0B2F9816FE5 /* Private\AVSystemController.h */ = {
-				isa = PBXFileReference;
-				fileEncoding = 4;
-				lastKnownFileType = sourcecode.c.h;
-				path = "Private\\AVSystemController.h";
-				sourceTree = "<group>";
-			};
 		A621739700046ACB3968C028 /* SettingsViewController.m */ = {
 				isa = PBXFileReference;
 				fileEncoding = 4;
@@ -251,6 +253,12 @@
 				fileEncoding = 4;
 				lastKnownFileType = sourcecode.c.h;
 				path = EdgeVolumeHandle.h;
+				sourceTree = "<group>";
+			};
+		B22BAACC9EDA27DCEBCDD0AC /* FrontBoard.tbd */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = sourcecode.text-based-dylib-standard-file;
+				path = FrontBoard.tbd;
 				sourceTree = "<group>";
 			};
 		B54EB152BE7CEA7B5D9FA637 /* PassThroughWindow.m */ = {
@@ -294,6 +302,12 @@
 				path = VolumeHUDView.m;
 				sourceTree = "<group>";
 			};
+		D20F0C708BAD6CD4AEB21CB3 /* RunningBoardServices.tbd */ = {
+				isa = PBXFileReference;
+				lastKnownFileType = sourcecode.text-based-dylib-standard-file;
+				path = RunningBoardServices.tbd;
+				sourceTree = "<group>";
+			};
 		D61C8EDD3763B43DAC0947BD /* SceneDelegate.h */ = {
 				isa = PBXFileReference;
 				fileEncoding = 4;
@@ -306,13 +320,6 @@
 				fileEncoding = 4;
 				lastKnownFileType = sourcecode.c.h;
 				path = SettingsViewController.h;
-				sourceTree = "<group>";
-			};
-		EE378E44BCE8AC28A84C8E6C /* Private\FBSOrientationUpdate.h */ = {
-				isa = PBXFileReference;
-				fileEncoding = 4;
-				lastKnownFileType = sourcecode.c.h;
-				path = "Private\\FBSOrientationUpdate.h";
 				sourceTree = "<group>";
 			};
 		F28CEC5BCAC1FDA21D9EEED2 /* AppDelegate.h */ = {
@@ -328,13 +335,6 @@
 				name = UIKit.framework;
 				path = System/Library/Frameworks/UIKit.framework;
 				sourceTree = SDKROOT;
-			};
-		F67294A3285EA6878C8B8E60 /* Private\UIKitPrivate.h */ = {
-				isa = PBXFileReference;
-				fileEncoding = 4;
-				lastKnownFileType = sourcecode.c.h;
-				path = "Private\\UIKitPrivate.h";
-				sourceTree = "<group>";
 			};
 /* End PBXFileReference section */
 
@@ -392,10 +392,6 @@
 					51CDF8E7A78D4C9E07213A11,
 					9DB26D9C1B8C108C9EF2A9A8,
 					9E34459DD27A257AB3303E24,
-					A4FF1209F50AF0B2F9816FE5,
-					8A044F95255BE728E6D9DE5D,
-					EE378E44BCE8AC28A84C8E6C,
-					F67294A3285EA6878C8B8E60,
 					D61C8EDD3763B43DAC0947BD,
 					E79147D48BCC557B7220D08B,
 					A48DBD136D6EDC8D428DD898,
@@ -409,10 +405,14 @@
 		918E39C0EFC22600EF6EFE19 /* Private */ = {
 				isa = PBXGroup;
 				children = (
-					1CE030C7526420B40FF88D98,
-					59B194DB965698943C91BDCA,
-					60A46369B2DE9EB9F11D79A9,
-					6213B4762B0C7DB2D94C037F,
+					077F0BF3A0122F9A8668C72A,
+					B22BAACC9EDA27DCEBCDD0AC,
+					675852DE3E71D1FAF2B98BDB,
+					D20F0C708BAD6CD4AEB21CB3,
+					5515955D485FAE7494EAEAB9,
+					7AE3B5317A53569A6B3F672E,
+					57C517ACBC5CD376670F3F23,
+					3DCE59EBDD4A1C033D161B50,
 				);
 				path = Private;
 				sourceTree = "<group>";
@@ -553,6 +553,10 @@
 					GCC_WARN_UNINITIALIZED_AUTOS = YES;
 					GCC_WARN_UNUSED_FUNCTION = YES;
 					GCC_WARN_UNUSED_VARIABLE = YES;
+					HEADER_SEARCH_PATHS = (
+						"$(inherited)",
+						"$(SRCROOT)/EdgeVolume/Private",
+					);
 					INFOPLIST_FILE = EdgeVolume/Info.plist;
 					IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 					LD_RUNPATH_SEARCH_PATHS = (
@@ -621,6 +625,10 @@
 					GCC_WARN_UNINITIALIZED_AUTOS = YES;
 					GCC_WARN_UNUSED_FUNCTION = YES;
 					GCC_WARN_UNUSED_VARIABLE = YES;
+					HEADER_SEARCH_PATHS = (
+						"$(inherited)",
+						"$(SRCROOT)/EdgeVolume/Private",
+					);
 					INFOPLIST_FILE = EdgeVolume/Info.plist;
 					IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 					LD_RUNPATH_SEARCH_PATHS = (
