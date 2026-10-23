@@ -7,6 +7,12 @@
 - 单击 = 浮现当前音量提示
 - 可设置长度、不透明度、左右边缘、锁定位置
 
+## 直接下载安装（无需构建）
+
+**[>>> 前往 Releases 下载 EdgeVolume.tipa <<<](https://github.com/fushanhuang/edgevolume/releases/latest)**
+
+安装方法：把 `EdgeVolume.tipa` 传到 iPad（微信文件传输 / AirDrop / iCloud Drive 均可）→ 选择「用 TrollStore 打开」→ 安装 → 打开一次「边缘音量」，回桌面即可看到边缘音量条。要求 **iPadOS 16.0–17.0 + TrollStore**，升级前请先在巨魔里卸载旧版。
+
 ---
 
 ## 一、工作原理（为什么普通 App 做不到，巨魔可以）
@@ -95,6 +101,8 @@ cd EdgeVolume
    **Actions → Build EdgeVolume IPA → Run workflow** 手动触发
 3. 约 3–5 分钟后在运行详情里下载构件 `EdgeVolume.tipa`
 4. 下载到 iPad（文件 App / AirDrop / 网盘均可）
+
+> 本仓库的成品包直接发布在 **[Releases](https://github.com/fushanhuang/edgevolume/releases/latest)**，不想自己构建的话下载即用。
 
 ---
 
