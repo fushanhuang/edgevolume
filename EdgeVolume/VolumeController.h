@@ -35,6 +35,14 @@ extern NSString *const kEVVolumeBackendChangedNotification;
 /// 后台静音播放保活（默认跟随设置）
 - (void)setKeepAliveEnabled:(BOOL)enabled;
 
+/// 保活是否健康（音频会话已激活且静音播放器在播放）。
+/// 被其他 App（如抖音）抢占音频会话后会变 NO——此时 App 随时可能被
+/// 系统挂起，后台快捷键会失效。诊断信息展示用
+@property (nonatomic, readonly) BOOL keepAliveHealthy;
+
+/// 尝试恢复保活（音频中断结束、切回前台时调用；幂等，安全频繁调用）
+- (void)restoreKeepAliveIfNeeded;
+
 /// 系统音量被其他途径改变（硬件按键、控制中心等）时回调，主线程调用
 @property (nonatomic, copy) void (^systemVolumeChanged)(float volume);
 

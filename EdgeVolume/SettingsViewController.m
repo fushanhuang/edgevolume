@@ -69,6 +69,8 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
     [super viewDidAppear:animated];
     // 成为第一响应者，保证前台 UIKeyCommand 快捷键能分发到本页
     [self becomeFirstResponder];
+    // 「捕获状态」含实时值（保活健康度/App 前后台），每次打开页面都刷新
+    [self reloadQuietly];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -134,7 +136,7 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
     switch (section) {
         case 0: return @"上下滑动滑动条 = 调节音量；左右拖动 = 移动位置；单击 = 显示当前音量；长按 = 紧急隐藏悬浮窗。「轨道粗细」是可见滑条本身的胖瘦（默认 20pt），嫌太细不好点中就调大；「触控宽度」是手指的热区范围（默认 44pt，比滑条宽才好命中，但不改变外观）。";
-        case 1: return @"快捷键经私有 IOHID 接口在后台监听（只观测、不拦截，不影响按键在原 App 里的功能）。默认用 ⌥ 组合（⌥++ / ⌥+-），因为 ⌘++ 在 Safari 等 App 里是放大页面，两者会同时生效；若 ⌥ 组合在你的 App 里也有冲突，可改 ⌃ 或 ⇧。地球键(🌐)是系统保留键，公开途径无法捕获，因此提供 ⌘/⌥/⌃/⇧ 选择。退到后台后仍响应快捷键需保持「后台保活」开启；重启 iPad 后需重新打开一次本应用。";
+        case 1: return @"快捷键经私有 IOHID 接口在后台监听（只观测、不拦截，不影响按键在原 App 里的功能）。默认用 ⌥ 组合（⌥++ / ⌥+-），因为 ⌘++ 在 Safari 等 App 里是放大页面，两者会同时生效；若 ⌥ 组合在你的 App 里也有冲突，可改 ⌃ 或 ⇧。地球键(🌐)是系统保留键，公开途径无法捕获，因此提供 ⌘/⌥/⌃/⇧ 选择。**后台生效依赖「后台保活」**：抖音等视频 App 会抢占音频会话导致保活中断（此时 App 可能被系统挂起、后台快捷键失效），本 App 已内置自动恢复，若「捕获状态」显示保活异常，切回本 App 一次即可重建；重启 iPad 后需重新打开一次本应用。";
         case 2: return @"若测试无效，请切换音量类别（部分机型的媒体音量与铃声音量是分开的）。";
         default: return @"重启 iPad 后需要重新打开一次本应用，悬浮条才会出现。";
     }
@@ -412,6 +414,17 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
     } else {
         [parts addObject:@"后台监听不可用（私有接口受限）；本 App 前台内快捷键仍可用"];
     }
+
+    // 保活状态：后台快捷键的生命线——被其他 App（如抖音）抢占音频会话后，
+    // App 会被系统挂起，后台监听随之失效。这里显式暴露，便于一图定位
+    VolumeController *vc = [VolumeController shared];
+    if ([EVSettings shared].keepAlive) {
+        [parts addObject:vc.keepAliveHealthy ? @"后台保活：正常" : @"后台保活：异常（会话被其他 App 抢占，已尝试自动恢复；若持续异常，后台快捷键会失效）"];
+    } else {
+        [parts addObject:@"后台保活：已关闭（后台快捷键依赖它，建议开启）"];
+    }
+    [parts addObject:[NSString stringWithFormat:@"App 状态：%@",
+                      [UIApplication sharedApplication].applicationState == UIApplicationStateActive ? @"前台" : @"后台"]];
 
     [parts addObject:[NSString stringWithFormat:@"当前组合：增大 %@+%@  减小 %@+%@",
                       [KeyboardShortcutController displayNameForModifier:s.kbUpModifier],

@@ -14,11 +14,21 @@ NSString *const kEVSystemVolumeChangedNotification = @"EVSystemVolumeChangedNoti
 @property (nonatomic, strong) AVAudioPlayer *silentPlayer;
 @property (nonatomic, assign) BOOL observing;
 @property (nonatomic, assign) BOOL applying;
+@property (nonatomic, assign) BOOL keepAliveWanted;      // 用户是否开启了保活
+@property (nonatomic, assign) BOOL sessionInterrupted;   // 音频会话是否被其他 App 抢占
+@property (nonatomic, strong) NSTimer *keepAliveWatchdog;
 
 - (BOOL)applyViaMPVolumeView:(float)v;
 - (UISlider *)volumeSlider;
 - (NSURL *)silentWAVURL;
 - (void)postBackendChanged;
+- (void)installAudioSessionObservers;
+- (void)handleAudioSessionInterruption:(NSNotification *)note;
+- (void)handleMediaServicesWereLost:(NSNotification *)note;
+- (void)handleRouteChange:(NSNotification *)note;
+- (void)handleSecondaryAudioHint:(NSNotification *)note;
+- (void)handleWillEnterForeground:(NSNotification *)note;
+- (void)startKeepAliveWatchdog;
 @end
 
 @implementation VolumeController
@@ -132,11 +142,13 @@ NSString *const kEVSystemVolumeChangedNotification = @"EVSystemVolumeChangedNoti
         [[AVAudioSession sharedInstance] addObserver:self
                                          forKeyPath:@"outputVolume"
                                             options:NSKeyValueObservingOptionNew
-                                            context:nil];
+                                                context:nil];
         self.observing = YES;
     }
+    [self installAudioSessionObservers];
     NSError *err = nil;
     if (![EVSettings shared].keepAlive) {
+        self.keepAliveWanted = NO;
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient
                                          withOptions:AVAudioSessionCategoryOptionMixWithOthers
                                                error:&err];
@@ -173,29 +185,138 @@ NSString *const kEVSystemVolumeChangedNotification = @"EVSystemVolumeChangedNoti
 #pragma mark - 后台保活（静音循环播放）
 
 - (void)setKeepAliveEnabled:(BOOL)enabled {
-    NSError *err = nil;
-    if (enabled) {
-        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
-                                         withOptions:AVAudioSessionCategoryOptionMixWithOthers
-                                               error:&err];
-        [[AVAudioSession sharedInstance] setActive:YES error:&err];
-        if (!self.silentPlayer) {
-            NSURL *url = [self silentWAVURL];
-            if (url) {
-                self.silentPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
-                self.silentPlayer.numberOfLoops = -1;
-                self.silentPlayer.volume = 0.0;
-                [self.silentPlayer prepareToPlay];
-            }
-        }
-        [self.silentPlayer play];
-    } else {
+    self.keepAliveWanted = enabled;
+    if (!enabled) {
+        [self.keepAliveWatchdog invalidate];
+        self.keepAliveWatchdog = nil;
+        self.sessionInterrupted = NO;
         [self.silentPlayer pause];
+        NSError *err = nil;
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient
                                          withOptions:AVAudioSessionCategoryOptionMixWithOthers
                                                error:&err];
         [[AVAudioSession sharedInstance] setActive:YES error:&err];
+        return;
     }
+    [self activateKeepAliveSession];
+    [self startKeepAliveWatchdog];
+}
+
+/// 建立并激活后台播放会话 + 启动静音循环播放（幂等）
+- (void)activateKeepAliveSession {
+    NSError *err = nil;
+    // 先停再建：被其他 App 抢占后直接 setCategory 可能失败，deactivate 后重建更稳
+    [[AVAudioSession sharedInstance] setActive:NO error:&err];
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback
+                                     withOptions:AVAudioSessionCategoryOptionMixWithOthers
+                                           error:&err];
+    [[AVAudioSession sharedInstance] setActive:YES error:&err];
+    if (!self.silentPlayer) {
+        NSURL *url = [self silentWAVURL];
+        if (url) {
+            self.silentPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&err];
+            self.silentPlayer.numberOfLoops = -1;
+            self.silentPlayer.volume = 0.0;
+            [self.silentPlayer prepareToPlay];
+        }
+    }
+    [self.silentPlayer play];
+    self.sessionInterrupted = NO;
+}
+
+/// 保活健康度：会话是 Playback 类别且播放器在播放（诊断用）
+- (BOOL)keepAliveHealthy {
+    if (!self.keepAliveWanted) return NO;
+    return [[AVAudioSession sharedInstance] category] == AVAudioSessionCategoryPlayback
+        && self.silentPlayer.isPlaying;
+}
+
+/// 尝试恢复保活（幂等；中断结束、切回前台、看门狗自愈时调用）
+- (void)restoreKeepAliveIfNeeded {
+    if (!self.keepAliveWanted) return;
+    if ([[AVAudioSession sharedInstance] category] == AVAudioSessionCategoryPlayback
+        && self.silentPlayer.isPlaying) {
+        return; // 健康，无需动作
+    }
+    [self activateKeepAliveSession];
+}
+
+#pragma mark - 音频会话事件（被抖音等 App 抢占后的恢复）
+
+- (void)installAudioSessionObservers {
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self selector:@selector(handleAudioSessionInterruption:)
+               name:AVAudioSessionInterruptionNotification object:nil];
+    [nc addObserver:self selector:@selector(handleMediaServicesWereLost:)
+               name:AVAudioSessionMediaServicesWereLostNotification object:nil];
+    [nc addObserver:self selector:@selector(handleRouteChange:)
+               name:AVAudioSessionRouteChangeNotification object:nil];
+    [nc addObserver:self selector:@selector(handleSecondaryAudioHint:)
+               name:AVAudioSessionSilenceSecondaryAudioHintNotification object:nil];
+    [nc addObserver:self selector:@selector(handleWillEnterForeground:)
+               name:UIApplicationWillEnterForegroundNotification object:nil];
+}
+
+- (void)handleAudioSessionInterruption:(NSNotification *)note {
+    NSDictionary *info = note.userInfo;
+    NSUInteger type = [info[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
+    if (type == AVAudioSessionInterruptionTypeBegan) {
+        // 被其他 App（如抖音）抢占。不停播放器——保持 playback 资格，
+        // 尽量缩短进程被系统挂起的窗口；是否真正恢复以 ended 为准
+        self.sessionInterrupted = YES;
+    } else {
+        // 结束：立即重建会话并恢复静音播放（不依赖 ShouldResume 标志，
+        // 部分机型的电话/Siri 类打断该标志缺失，但保活仍应恢复）
+        self.sessionInterrupted = NO;
+        if (self.keepAliveWanted) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self activateKeepAliveSession];
+            });
+        }
+    }
+}
+
+- (void)handleMediaServicesWereLost:(NSNotification *)note {
+    self.sessionInterrupted = YES;
+    [self.silentPlayer pause];
+}
+
+- (void)handleRouteChange:(NSNotification *)note {
+    // 耳机拔掉/路由变化不会杀会话，这里只做状态刷新；播放器若停了由看门狗恢复
+    if (self.keepAliveWanted && !self.silentPlayer.isPlaying && !self.sessionInterrupted) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self restoreKeepAliveIfNeeded];
+        });
+    }
+}
+
+- (void)handleSecondaryAudioHint:(NSNotification *)note {
+    // 其他 App 开始播放，我们被降为 secondary。不能停（停了进程会被挂起），
+    // 保持静音循环继续跑即可——这正是 MixWithOthers 的意义
+    if (self.keepAliveWanted && !self.silentPlayer.isPlaying) {
+        [self.silentPlayer play];
+    }
+}
+
+- (void)handleWillEnterForeground:(NSNotification *)note {
+    [self restoreKeepAliveIfNeeded];
+}
+
+/// 后台自愈看门狗：后台 running 状态下定时检查播放器是否还活着。
+/// 注意：若进程已被系统挂起，定时器本身也不会触发——防挂起主要靠
+/// audio background mode + interruption 及时恢复，看门狗是第二道防线
+- (void)startKeepAliveWatchdog {
+    [self.keepAliveWatchdog invalidate];
+    self.keepAliveWatchdog = [NSTimer scheduledTimerWithTimeInterval:20.0
+                                                              target:self
+                                                            selector:@selector(keepAliveWatchdogFired:)
+                                                            userInfo:nil
+                                                             repeats:YES];
+}
+
+- (void)keepAliveWatchdogFired:(NSTimer *)timer {
+    if (!self.keepAliveWanted) return;
+    [self restoreKeepAliveIfNeeded];
 }
 
 /// 生成一段 1 秒的静音 WAV（8kHz / 16bit / 单声道）
@@ -247,6 +368,7 @@ NSString *const kEVSystemVolumeChangedNotification = @"EVSystemVolumeChangedNoti
     if (self.observing) {
         [[AVAudioSession sharedInstance] removeObserver:self forKeyPath:@"outputVolume"];
     }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end
