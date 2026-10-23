@@ -6,7 +6,6 @@
 #import "EdgeTouchWindow.h"
 #import "EVSettings.h"
 #import "VolumeController.h"
-#import "KeyboardShortcutController.h"
 
 NSString *const kEVOverlayStatusChangedNotification = @"EVOverlayStatusChangedNotification";
 
@@ -95,9 +94,6 @@ NSString *const kEVOverlayStatusChangedNotification = @"EVOverlayStatusChangedNo
 
     // 音量监听（KVO outputVolume）
     [[VolumeController shared] startMonitoring];
-
-    // 硬件键盘快捷键（IOHID 后台监听 + 前台 UIKeyCommand 兜底）
-    [[KeyboardShortcutController shared] start];
 
     // 全局悬浮（设置里可关；关闭后 App 只作为普通设置页运行）
     if ([EVSettings shared].overlayEnabled) {

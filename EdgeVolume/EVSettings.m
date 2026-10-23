@@ -25,13 +25,6 @@ NSString *const kEVSettingsChangedNotification = @"EVSettingsChangedNotification
         @"EVSmallWindowMode": @YES,
         @"EVKeepAlive": @YES,
         @"EVVolumeCategory": @(0),
-        @"EVKBEnabled": @YES,
-        @"EVKBUpModifier": @(EVKBModifierOption),
-        @"EVKBUpKey": @(EVKBKeyPlus),
-        @"EVKBDownModifier": @(EVKBModifierOption),
-        @"EVKBDownKey": @(EVKBKeyMinus),
-        @"EVKBStep": @(0.10),
-        @"EVKBDiagnostic": @NO,
     };
     [[NSUserDefaults standardUserDefaults] registerDefaults:defs];
 }
@@ -93,47 +86,6 @@ NSString *const kEVSettingsChangedNotification = @"EVSettingsChangedNotification
 
 - (NSInteger)volumeCategory { return [[NSUserDefaults standardUserDefaults] integerForKey:@"EVVolumeCategory"]; }
 - (void)setVolumeCategory:(NSInteger)v { [[NSUserDefaults standardUserDefaults] setInteger:v forKey:@"EVVolumeCategory"]; [self postChanged]; }
-
-- (BOOL)kbEnabled { return [[NSUserDefaults standardUserDefaults] boolForKey:@"EVKBEnabled"]; }
-- (void)setKbEnabled:(BOOL)v { [[NSUserDefaults standardUserDefaults] setBool:v forKey:@"EVKBEnabled"]; [self postChanged]; }
-
-- (EVKBModifier)kbUpModifier { return (EVKBModifier)[[NSUserDefaults standardUserDefaults] integerForKey:@"EVKBUpModifier"]; }
-- (void)setKbUpModifier:(EVKBModifier)v {
-    v = (EVKBModifier)fmax(0, fmin(4, (NSInteger)v));
-    [[NSUserDefaults standardUserDefaults] setInteger:v forKey:@"EVKBUpModifier"];
-    [self postChanged];
-}
-
-- (EVKBKey)kbUpKey { return (EVKBKey)[[NSUserDefaults standardUserDefaults] integerForKey:@"EVKBUpKey"]; }
-- (void)setKbUpKey:(EVKBKey)v {
-    v = (EVKBKey)fmax(0, fmin(3, (NSInteger)v));
-    [[NSUserDefaults standardUserDefaults] setInteger:v forKey:@"EVKBUpKey"];
-    [self postChanged];
-}
-
-- (EVKBModifier)kbDownModifier { return (EVKBModifier)[[NSUserDefaults standardUserDefaults] integerForKey:@"EVKBDownModifier"]; }
-- (void)setKbDownModifier:(EVKBModifier)v {
-    v = (EVKBModifier)fmax(0, fmin(4, (NSInteger)v));
-    [[NSUserDefaults standardUserDefaults] setInteger:v forKey:@"EVKBDownModifier"];
-    [self postChanged];
-}
-
-- (EVKBKey)kbDownKey { return (EVKBKey)[[NSUserDefaults standardUserDefaults] integerForKey:@"EVKBDownKey"]; }
-- (void)setKbDownKey:(EVKBKey)v {
-    v = (EVKBKey)fmax(0, fmin(3, (NSInteger)v));
-    [[NSUserDefaults standardUserDefaults] setInteger:v forKey:@"EVKBDownKey"];
-    [self postChanged];
-}
-
-- (CGFloat)kbStep { return [[NSUserDefaults standardUserDefaults] doubleForKey:@"EVKBStep"]; }
-- (void)setKbStep:(CGFloat)v {
-    v = fmax(0.02, fmin(0.25, v));
-    [[NSUserDefaults standardUserDefaults] setDouble:v forKey:@"EVKBStep"];
-    [self postChanged];
-}
-
-- (BOOL)kbDiagnostic { return [[NSUserDefaults standardUserDefaults] boolForKey:@"EVKBDiagnostic"]; }
-- (void)setKbDiagnostic:(BOOL)v { [[NSUserDefaults standardUserDefaults] setBool:v forKey:@"EVKBDiagnostic"]; [self postChanged]; }
 
 - (NSString *)volumeCategoryString {
     return self.volumeCategory == 1 ? @"Ringtone" : @"Audio/Video";
