@@ -12,32 +12,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ldid 用于把私有 entitlements 写入 Mach-O（巨魔必需）
-      # 说明：本仓库已内置 EdgeVolume.xcodeproj，无需 xcodegen
+      # xcodegen：由 project.yml 生成 EdgeVolume.xcodeproj
+      # ldid：把私有 entitlements 写入 Mach-O（巨魔必需）
       - name: Install dependencies
-        run: brew install ldid
+        run: brew install xcodegen ldid
 
-      # 诊断：用 plutil -lint 精确定位 pbxproj / plist 的语法错误行号
+      - name: Generate Xcode project
+        run: |
+          xcodegen --version
+          xcodegen generate
+          echo "===== 生成的工程文件 ====="
+          find EdgeVolume.xcodeproj -type f | sort
+
+      # 诊断：plutil 只能 lint 标准 plist（XML/binary），
+      # pbxproj 是 OpenStep 格式、scheme/workspace 是 Xcode 私有 plist，
+      # 对它们跑 plutil 只会得到误报，因此只检查标准 plist
       - name: Diagnose project files
         run: |
-          echo "===== .xcodeproj 文件清单 ====="
-          find EdgeVolume.xcodeproj -type f | sort
-          for f in EdgeVolume.xcodeproj/project.pbxproj \
-                   EdgeVolume/Info.plist \
-                   EdgeVolume/entitlements.plist \
-                   EdgeVolume.xcodeproj/xcshareddata/xcschemes/EdgeVolume.xcscheme \
-                   EdgeVolume.xcodeproj/project.xcworkspace/contents.xcworkspacedata; do
+          for f in EdgeVolume/Info.plist EdgeVolume/entitlements.plist; do
             echo "----- plutil -lint $f -----"
-            plutil -lint "$f" || true
+            plutil -lint "$f"
           done
-          echo "===== pbxproj 前 6 行（检查 BOM/编码）====="
-          head -6 EdgeVolume.xcodeproj/project.pbxproj | od -c | head -12
-          echo "===== 反斜杠与 CRLF 统计 ====="
+          echo "===== pbxproj 编码 / 行尾 / 转义符统计 ====="
+          head -3 EdgeVolume.xcodeproj/project.pbxproj | od -c | head -6
           printf 'backslash: %s\n' "$(grep -c '\\' EdgeVolume.xcodeproj/project.pbxproj || true)"
           printf 'CR: %s\n' "$(grep -c $'\r' EdgeVolume.xcodeproj/project.pbxproj || true)"
-          echo "===== xcodebuild -list -json ====="
-          xcodebuild -project EdgeVolume.xcodeproj -list -json || true
 
+      # 这一步是 pbxproj 能否被 Xcode 解析的权威判据
       - name: Show schemes
         run: xcodebuild -project EdgeVolume.xcodeproj -list
 

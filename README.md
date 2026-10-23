@@ -57,14 +57,14 @@
 
 ## 三、构建 IPA
 
-> 本仓库**已内置完整的 `EdgeVolume.xcodeproj`**（无需安装 xcodegen，双击即可编译）。
-> 工程由 `_tools/gen_xcodeproj.py` 确定性生成，想重新生成或改配置可参考 `project.yml`。
+> 工程文件由 **XcodeGen** 从 `project.yml` 生成（`EdgeVolume.xcodeproj` 不纳入版本管理）。
+> 需要安装两个命令行工具：`xcodegen`（生成工程）和 `ldid`（写私有 entitlements）。
 
 ### 方式 A：Mac 本地一键构建（推荐）
 
 ```bash
-# 安装依赖（一次性，只需要 ldid）
-brew install ldid
+# 安装依赖（一次性）
+brew install xcodegen ldid
 
 # 进入项目目录
 cd EdgeVolume
@@ -73,12 +73,13 @@ cd EdgeVolume
 ./build-ipa.sh
 ```
 
-完成后得到 `EdgeVolume.tipa`（脚本会自动完成：编译 → ldid 写 entitlements → 校验签名 → 打包）。
+脚本会自动完成：`xcodegen generate` → 编译 → ldid 写 entitlements → 校验签名 → 打包。
+完成后得到 `EdgeVolume.tipa`。
 
 ### 方式 B：Mac 上用 Xcode 手动构建
 
-1. `brew install ldid`
-2. `open EdgeVolume.xcodeproj`（无需 xcodegen）
+1. `brew install xcodegen ldid`
+2. `xcodegen generate && open EdgeVolume.xcodeproj`
 3. 注意：**不要**用 Xcode 的自动签名直接装——私有 entitlements 会被 Apple 签名体系剥掉，悬浮窗会失效。正确做法仍然是跑 `build-ipa.sh`，或：
    - Xcode 里 Product → Build（任意签名/不签名均可）
    - 找到 `build/Release-iphoneos/EdgeVolume.app`
@@ -177,11 +178,9 @@ cd EdgeVolume
 ```
 EdgeVolume/
 ├── README.md                  ← 本文档
-├── EdgeVolume.xcodeproj/      ← 已内置的 Xcode 工程（双击即可编译）
-├── project.yml                ← XcodeGen 工程定义（可选，改配置用）
+├── project.yml                ← XcodeGen 工程定义（唯一工程配置来源）
 ├── build-ipa.sh               ← Mac 一键构建脚本
 ├── .github/workflows/build.yml← GitHub Actions 云构建
-├── _tools/gen_xcodeproj.py    ← 工程生成器（确定性，含结构自检）
 └── EdgeVolume/
     ├── AppDelegate.{h,m}      ← 系统级 Shell 注册 + 全局悬浮场景创建
     ├── SceneDelegate.{h,m}    ← 场景连接、旋转跟随
@@ -198,6 +197,8 @@ EdgeVolume/
     ├── entitlements.plist      ← 巨魔签名用权限（关键）
     └── Assets.xcassets/
 ```
+
+> `EdgeVolume.xcodeproj/` 由 `xcodegen generate` 生成，不纳入版本管理（见 `.gitignore`）。
 
 ---
 

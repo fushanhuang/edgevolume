@@ -4,9 +4,8 @@
 #
 # 依赖：
 #   - Xcode（macOS App Store 安装）
-#   - ldid（brew install ldid）
-#   - xcodegen 仅在使用「无工程源码」时才需要（本仓库已内置
-#     EdgeVolume.xcodeproj，正常情况下无需安装）
+#   - xcodegen（brew install xcodegen）—— 由 project.yml 生成工程
+#   - ldid（brew install ldid）—— 把私有 entitlements 写进 Mach-O
 #
 # 用法：./build-ipa.sh
 # 产物：EdgeVolume.tipa
@@ -16,17 +15,20 @@ cd "$(dirname "$0")"
 
 ENT_PLIST="$(pwd)/EdgeVolume/entitlements.plist"
 
-echo "==> [1/5] 准备 Xcode 工程"
-if [ -d "EdgeVolume.xcodeproj" ]; then
-    echo "    使用仓库内置的 EdgeVolume.xcodeproj（无需 xcodegen）"
-elif command -v xcodegen >/dev/null 2>&1; then
-    echo "    未找到工程文件，使用 xcodegen 生成"
-    xcodegen generate
-else
-    echo "错误：缺少 EdgeVolume.xcodeproj，且未安装 xcodegen" >&2
-    echo "请执行：brew install xcodegen && xcodegen generate" >&2
+echo "==> [1/5] 用 XcodeGen 生成 Xcode 工程"
+if ! command -v xcodegen >/dev/null 2>&1; then
+  echo "    未检测到 xcodegen，尝试通过 Homebrew 安装"
+  if command -v brew >/dev/null 2>&1; then
+    brew install xcodegen
+  else
+    echo "错误：未安装 xcodegen，且找不到 Homebrew" >&2
+    echo "请先安装 Homebrew，然后执行：brew install xcodegen" >&2
     exit 1
+  fi
 fi
+xcodegen --version
+xcodegen generate
+echo "    已生成 EdgeVolume.xcodeproj"
 
 echo "==> [2/5] 编译（不经过 Apple 签名，巨魔会重新签名）"
 xcodebuild -project EdgeVolume.xcodeproj \

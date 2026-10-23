@@ -4,6 +4,7 @@ options:
   deploymentTarget:
     iOS: "16.0"
   createIntermediateGroups: true
+
 targets:
   EdgeVolume:
     type: application
@@ -12,10 +13,17 @@ targets:
     sources:
       - path: EdgeVolume
         excludes:
-          - "Private/*.tbd"
           - "Info.plist"
           - "entitlements.plist"
+          # Private/ 只含私有 API 头文件与 .tbd 链接桩：
+          # 头文件通过 HEADER_SEARCH_PATHS 参与编译，.tbd 通过
+          # OTHER_LDFLAGS 参与链接，二者都不需要进源文件组
+          - "Private"
     dependencies:
+      - sdk: UIKit.framework
+      - sdk: Foundation.framework
+      - sdk: CoreGraphics.framework
+      - sdk: QuartzCore.framework
       - sdk: AVFoundation.framework
       - sdk: MediaPlayer.framework
     settings:
@@ -24,12 +32,37 @@ targets:
         PRODUCT_NAME: EdgeVolume
         INFOPLIST_FILE: EdgeVolume/Info.plist
         GENERATE_INFOPLIST_FILE: NO
+        CODE_SIGN_ENTITLEMENTS: EdgeVolume/entitlements.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         TARGETED_DEVICE_FAMILY: "1,2"
         SKIP_INSTALL: YES
-        # FrontBoard / FrontBoardServices / RunningBoardServices 私有框架通过 .tbd 链接
+        # 私有 API 头文件（AVSystemController.h / UIKitPrivate.h 等）
+        HEADER_SEARCH_PATHS:
+          - "$(inherited)"
+          - "$(SRCROOT)/EdgeVolume/Private"
+        # FrontBoard / FrontBoardServices / RunningBoardServices / AppleAccount
+        # 均为私有框架（不在公开 SDK 中），用 .tbd 链接桩直接喂给 ld
         OTHER_LDFLAGS:
-          - $(inherited)
+          - "$(inherited)"
           - "$(SRCROOT)/EdgeVolume/Private/FrontBoard.tbd"
           - "$(SRCROOT)/EdgeVolume/Private/FrontBoardServices.tbd"
           - "$(SRCROOT)/EdgeVolume/Private/RunningBoardServices.tbd"
           - "$(SRCROOT)/EdgeVolume/Private/AppleAccount.tbd"
+        # 仅出真机 arm64（巨魔安装必需）
+        ARCHS: arm64
+
+# 显式声明 scheme，避免依赖 XcodeGen 的隐式生成行为
+schemes:
+  EdgeVolume:
+    build:
+      targets:
+        EdgeVolume: all
+    run:
+      config: Release
+    profile:
+      config: Release
+    analyze:
+      config: Release
+    archive:
+      config: Release
