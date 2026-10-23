@@ -13,7 +13,7 @@ NSString *const kEVOverlayStatusChangedNotification = @"EVOverlayStatusChangedNo
 // 【黑屏修复 · 关键】
 // UIRootWindowScenePresentationBinder 内部会创建私有的 UIRootSceneWindow
 // （UIKit 私有 UIWindow 子类）来承载 FBScene 的画面。该窗口默认是
-// 不透明黑底，且层级低于普通窗口——不处理的话，悬浮场景一创建就会
+// 不透明黑底，且位于场景内所有窗口之上——不处理的话，悬浮场景一创建就会
 // 铺满一整块黑色，盖住 App 自己的界面（用户观感：打开 App 全黑，
 // 只有锁屏解锁让系统收回前台场景才能回桌面）。
 // 这里用 category 强制它的背景为透明、层级为 10000。
@@ -64,28 +64,38 @@ NSString *const kEVOverlayStatusChangedNotification = @"EVOverlayStatusChangedNo
     self.touchSceneIdentifier = @"EVOverlayTouch";
     self.passSceneIdentifier = @"EVOverlayPass";
 
-    // 1) 占位悬浮窗（FBScene 连接成功后会被 SceneDelegate 替换为绑定全局场景的窗口）
-    //    用 EdgeTouchWindow：只有滑条区域接收触摸，其余穿透
-    self.overlayTouchRootVC = [[OverlayRootViewController alloc] initWithMode:OverlayModeTouch];
-    self.overlayPassRootVC = [[OverlayRootViewController alloc] initWithMode:OverlayModePass];
+    // ===== 第一层：占位悬浮窗 =====
+    // 立即创建、立即可见，不依赖 FBScene 连接。
+    // 作用：即使悬浮场景没能作为 UIScene 连接进来（或场景层尚未就绪），
+    //       App 前台内依然能看到音量条；FBScene 连接成功后由 SceneDelegate
+    //       创建第二层（场景窗），两层内容由同一套 EVSettings 驱动、保持同步。
+    // EdgeTouchWindow：只有滑条区域接收触摸，其余穿透
+    self.placeholderTouchVC = [[OverlayRootViewController alloc] initWithMode:OverlayModeTouch];
+    self.placeholderPassVC = [[OverlayRootViewController alloc] initWithMode:OverlayModePass];
 
-    self.overlayWindowIsTouch = [[EdgeTouchWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    self.overlayWindowIsTouch.backgroundColor = [UIColor clearColor];
-    self.overlayWindowIsTouch.windowLevel = 10000;
-    self.overlayWindowIsTouch.rootViewController = self.overlayTouchRootVC;
-    self.overlayWindowIsTouch.hidden = NO;
-    [self.overlayWindowIsTouch makeKeyAndVisible];
+    self.placeholderTouchWindow = [[EdgeTouchWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.placeholderTouchWindow.backgroundColor = [UIColor clearColor];
+    self.placeholderTouchWindow.windowLevel = 10000;
+    self.placeholderTouchWindow.rootViewController = self.placeholderTouchVC;
+    self.placeholderTouchWindow.hidden = NO;
+    [self.placeholderTouchWindow makeKeyAndVisible];
 
-    self.overlayWindowNoTouch = [[PassThroughWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    self.overlayWindowNoTouch.backgroundColor = [UIColor clearColor];
-    self.overlayWindowNoTouch.windowLevel = 9999;
-    self.overlayWindowNoTouch.rootViewController = self.overlayPassRootVC;
-    self.overlayWindowNoTouch.hidden = NO;
+    self.placeholderPassWindow = [[PassThroughWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.placeholderPassWindow.backgroundColor = [UIColor clearColor];
+    self.placeholderPassWindow.windowLevel = 9999;
+    self.placeholderPassWindow.rootViewController = self.placeholderPassVC;
+    self.placeholderPassWindow.hidden = NO;
 
-    // 2) 音量监听（KVO outputVolume）
+    // 活跃层指针：初始指向占位层；场景层就绪后由 SceneDelegate 切换
+    self.overlayWindowIsTouch = self.placeholderTouchWindow;
+    self.overlayWindowNoTouch = self.placeholderPassWindow;
+    self.overlayTouchRootVC = self.placeholderTouchVC;
+    self.overlayPassRootVC = self.placeholderPassVC;
+
+    // 音量监听（KVO outputVolume）
     [[VolumeController shared] startMonitoring];
 
-    // 3) 全局悬浮（设置里可关；关闭后 App 只作为普通设置页运行）
+    // 全局悬浮（设置里可关；关闭后 App 只作为普通设置页运行）
     if ([EVSettings shared].overlayEnabled) {
         [self startFloatingOverlay];
     } else {
@@ -130,6 +140,7 @@ NSString *const kEVOverlayStatusChangedNotification = @"EVOverlayStatusChangedNo
     settings.foreground = YES;                    // 前台场景：不被其他 App 遮挡
     settings.interfaceOrientation = UIInterfaceOrientationPortrait;
     settings.deviceOrientationEventsEnabled = YES;
+    settings.interruptionPolicy = 0;              // 参照 FrontBoardAppLauncher：不被打断
     [settings.ignoreOcclusionReasons addObject:@"SystemApp"];
     parameters.settings = settings;
 
@@ -148,8 +159,19 @@ NSString *const kEVOverlayStatusChangedNotification = @"EVOverlayStatusChangedNo
 }
 
 - (void)setOverlayHidden:(BOOL)hidden {
-    self.overlayWindowIsTouch.hidden = hidden;
-    self.overlayWindowNoTouch.hidden = hidden;
+    _overlayHidden = hidden;
+    // 两层窗口一起动（场景层 + 占位层），确保任何一层可见时都能被紧急隐藏。
+    // 注意：不能直接用数组字面量——场景层未创建时对应窗口为 nil，
+    // ObjC 集合字面量遇到 nil 会抛异常。
+    NSMutableArray *windows = [NSMutableArray array];
+    if (self.placeholderTouchWindow) [windows addObject:self.placeholderTouchWindow];
+    if (self.placeholderPassWindow)  [windows addObject:self.placeholderPassWindow];
+    if (self.sceneTouchWindow)       [windows addObject:self.sceneTouchWindow];
+    if (self.scenePassWindow)        [windows addObject:self.scenePassWindow];
+    for (UIWindow *w in windows) {
+        w.hidden = hidden;
+    }
+    [self logEvent:hidden ? @"已紧急隐藏全部悬浮窗" : @"已恢复显示悬浮窗"];
 }
 
 - (void)markSceneConnected:(NSString *)identifier {
@@ -160,8 +182,23 @@ NSString *const kEVOverlayStatusChangedNotification = @"EVOverlayStatusChangedNo
 }
 
 - (void)markSceneDisconnected:(NSString *)identifier {
-    if ([identifier isEqualToString:self.touchSceneIdentifier]) self.touchSceneConnected = NO;
-    if ([identifier isEqualToString:self.passSceneIdentifier]) self.passSceneConnected = NO;
+    if ([identifier isEqualToString:self.touchSceneIdentifier]) {
+        self.touchSceneConnected = NO;
+        self.sceneTouchLayerCreated = NO;
+        self.sceneTouchWindow = nil;
+        self.sceneTouchVC = nil;
+        // 活跃层回退到占位层，避免悬空指针
+        self.overlayWindowIsTouch = self.placeholderTouchWindow;
+        self.overlayTouchRootVC = self.placeholderTouchVC;
+    }
+    if ([identifier isEqualToString:self.passSceneIdentifier]) {
+        self.passSceneConnected = NO;
+        self.scenePassLayerCreated = NO;
+        self.scenePassWindow = nil;
+        self.scenePassVC = nil;
+        self.overlayWindowNoTouch = self.placeholderPassWindow;
+        self.overlayPassRootVC = self.placeholderPassVC;
+    }
     [self logEvent:[NSString stringWithFormat:@"场景断开:%@", identifier]];
     [[NSNotificationCenter defaultCenter] postNotificationName:kEVOverlayStatusChangedNotification object:nil];
 }

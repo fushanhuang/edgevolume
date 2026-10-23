@@ -6,11 +6,24 @@ extern NSString *const kEVOverlayStatusChangedNotification;
 
 /// 主界面窗口
 @property (nonatomic, strong) UIWindow *window;
-/// 全局可触摸悬浮窗（音量滑动条）
+
+/// ===== 第一层：占位悬浮窗（didFinishLaunching 里创建，不依赖场景连接）=====
+/// 场景连不上时由它兜底显示音量条（App 前台内可见）
+@property (nonatomic, strong) UIWindow *placeholderTouchWindow;
+@property (nonatomic, strong) UIWindow *placeholderPassWindow;
+@property (nonatomic, strong) UIViewController *placeholderTouchVC;
+@property (nonatomic, strong) UIViewController *placeholderPassVC;
+
+/// ===== 第二层：场景悬浮窗（FBScene 连接后由 SceneDelegate 创建）=====
+/// 绑定 foreground=YES 的全局场景，App 退到桌面后仍然显示——常驻靠这一层
+@property (nonatomic, strong) UIWindow *sceneTouchWindow;
+@property (nonatomic, strong) UIWindow *scenePassWindow;
+@property (nonatomic, strong) UIViewController *sceneTouchVC;
+@property (nonatomic, strong) UIViewController *scenePassVC;
+
+/// 活跃层指针：初始指向占位层；场景层创建后切换过去（HUD 等经此访问）
 @property (nonatomic, strong) UIWindow *overlayWindowIsTouch;
-/// 全局穿透悬浮窗（HUD 提示）
 @property (nonatomic, strong) UIWindow *overlayWindowNoTouch;
-/// 两个悬浮窗的根视图控制器
 @property (nonatomic, strong) UIViewController *overlayTouchRootVC;
 @property (nonatomic, strong) UIViewController *overlayPassRootVC;
 
@@ -24,6 +37,13 @@ extern NSString *const kEVOverlayStatusChangedNotification;
 @property (nonatomic, assign, readonly) BOOL shellRegistered;
 @property (nonatomic, assign) BOOL touchSceneConnected;
 @property (nonatomic, assign) BOOL passSceneConnected;
+
+/// 场景会话路由状态（SceneDelegate 用）
+@property (nonatomic, assign) BOOL mainSceneConnected;
+@property (nonatomic, assign) BOOL sceneTouchLayerCreated;
+@property (nonatomic, assign) BOOL scenePassLayerCreated;
+/// 长按紧急隐藏中（打开 App 自动清除）
+@property (nonatomic, assign, readwrite) BOOL overlayHidden;
 
 /// 最近事件日志（设置页诊断用，最新在最后）
 @property (nonatomic, strong, readonly) NSArray<NSString *> *eventLog;
@@ -39,5 +59,7 @@ extern NSString *const kEVOverlayStatusChangedNotification;
 
 - (void)markSceneConnected:(NSString *)identifier;
 - (void)markSceneDisconnected:(NSString *)identifier;
+/// 记录一条诊断事件（设置页「运行状态」可见）
+- (void)logEvent:(NSString *)event;
 
 @end

@@ -3,6 +3,16 @@
 
 @implementation PassThroughWindow
 
+// 保持窗口所在场景在 App 退到后台后依然存活（参照 FrontBoardAppLauncher）
+- (BOOL)_extendsScreenSceneLifetime {
+    return YES;
+}
+
+// 允许覆盖系统遮挡检测，配合 FBScene 的 ignoreOcclusionReasons=SystemApp
+- (BOOL)_allowsOcclusionDetectionOverride {
+    return YES;
+}
+
 // 双保险 1：UIKit 私有属性，让整个窗口忽略 hit-test（iOS 17 仍有效）
 - (BOOL)_ignoresHitTest {
     return YES;

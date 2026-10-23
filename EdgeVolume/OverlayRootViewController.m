@@ -110,7 +110,9 @@
     UIWindow *win = self.view.window;
     if (!win) return;
     EVSettings *s = [EVSettings shared];
-    if (!s.enabled) {
+    AppDelegate *ad = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    // 总开关关闭、或长按紧急隐藏中：隐藏窗口（紧急隐藏打开 App 后自动解除）
+    if (!s.enabled || ad.overlayHidden) {
         win.hidden = YES;
         return;
     }

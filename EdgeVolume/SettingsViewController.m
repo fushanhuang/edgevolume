@@ -310,7 +310,11 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
     NSMutableArray *parts = [NSMutableArray array];
     if ([ad isKindOfClass:NSClassFromString(@"AppDelegate")]) {
         [parts addObject:ad.shellRegistered ? @"系统Shell:已注册" : @"系统Shell:未注册"];
-        [parts addObject:ad.touchSceneConnected ? @"悬浮场景:已连接" : @"悬浮场景:未连接"];
+        // 两层窗口各自的状态：场景层负责桌面常驻，占位层负责 App 前台兜底
+        NSString *sceneLayer = ad.sceneTouchLayerCreated ? @"场景层:已创建" : @"场景层:未创建";
+        NSString *placeLayer = ad.placeholderTouchWindow && !ad.placeholderTouchWindow.hidden ? @"占位层:显示中" : @"占位层:已隐藏";
+        [parts addObject:[NSString stringWithFormat:@"%@ / %@", sceneLayer, placeLayer]];
+        if (ad.overlayHidden) [parts addObject:@"状态:已紧急隐藏(打开App恢复)"];
     }
     switch ([VolumeController shared].backend) {
         case EVVolumeBackendAVSystemController: [parts addObject:@"音量API:私有接口"]; break;

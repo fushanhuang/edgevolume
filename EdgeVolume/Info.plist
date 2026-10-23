@@ -75,10 +75,12 @@
 	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
-		<!-- 与社区验证过的实现（SysView）保持一致：false。
-		     FrontBoard 注入的悬浮 FBScene 仍会经 SceneDelegate 连接 -->
+		<!-- 必须为 true：FrontBoard 注入的两个悬浮 FBScene（EVOverlayTouch/EVOverlayPass）
+		     需要各自作为一个 UIScene 会话连接进来，SceneDelegate 才能为它们创建
+		     「绑定全局前台场景」的窗口——这一层才是退到桌面后仍然显示的常驻层。
+		     为 false 时系统只允许一个场景会话，悬浮场景连不进来，桌面就没有音量条。 -->
 		<key>UIApplicationSupportsMultipleScenes</key>
-		<false/>
+		<true/>
 		<key>UISceneConfigurations</key>
 		<dict>
 			<key>UIWindowSceneSessionRoleApplication</key>
