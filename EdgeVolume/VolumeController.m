@@ -14,6 +14,11 @@ NSString *const kEVSystemVolumeChangedNotification = @"EVSystemVolumeChangedNoti
 @property (nonatomic, strong) AVAudioPlayer *silentPlayer;
 @property (nonatomic, assign) BOOL observing;
 @property (nonatomic, assign) BOOL applying;
+
+- (BOOL)applyViaMPVolumeView:(float)v;
+- (UISlider *)volumeSlider;
+- (NSURL *)silentWAVURL;
+- (void)postBackendChanged;
 @end
 
 @implementation VolumeController

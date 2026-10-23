@@ -8,6 +8,11 @@
 
 NSString *const kEVOverlayStatusChangedNotification = @"EVOverlayStatusChangedNotification";
 
+@interface AppDelegate ()
+/// 创建一个全局悬浮 Scene，返回其场景展示绑定器（需强引用）
+- (id)createFloatingSceneWithIdentifier:(NSString *)sceneIdentifier;
+@end
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {

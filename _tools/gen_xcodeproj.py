@@ -791,11 +791,29 @@ def main():
     objs, project_uuid = build_objects()
     PROJ_DIR.mkdir(parents=True, exist_ok=True)
     (PROJ_DIR / "xcshareddata" / "xcschemes").mkdir(parents=True, exist_ok=True)
+    (PROJ_DIR / "project.xcworkspace").mkdir(parents=True, exist_ok=True)
+
+    # 显式用 LF 写出，避免 Windows 上文本模式默认的 CRLF
+    def write_lf(path, text):
+        path.write_bytes(text.replace("\r\n", "\n").encode("utf-8"))
 
     pbx = PROJ_DIR / "project.pbxproj"
-    pbx.write_text(render_pbxproj(objs, project_uuid), encoding="utf-8")
+    write_lf(pbx, render_pbxproj(objs, project_uuid))
     scheme = PROJ_DIR / "xcshareddata" / "xcschemes" / (TARGET_NAME + ".xcscheme")
-    scheme.write_text(render_scheme(targets_uuid(objs)), encoding="utf-8")
+    write_lf(scheme, render_scheme(targets_uuid(objs)))
+
+    # Xcode 生成的每个 .xcodeproj 都自带一个工作空间，
+    # 缺失时 xcodebuild 可能无法正确枚举 scheme。
+    ws = PROJ_DIR / "project.xcworkspace" / "contents.xcworkspacedata"
+    write_lf(ws, (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<Workspace\n'
+        '   version = "1.0">\n'
+        '   <FileRef\n'
+        '      location = "self:EdgeVolume.xcodeproj">\n'
+        '   </FileRef>\n'
+        '</Workspace>\n'
+    ))
 
     problems = lint_pbxproj(pbx)
     n = len([u for u in objs])
@@ -806,6 +824,7 @@ def main():
         sys.exit(1)
     print("OK  %s（%d 个对象，%d 字节）" % (pbx, n, pbx.stat().st_size))
     print("OK  %s" % scheme)
+    print("OK  %s" % ws)
     print("OK  结构自检全部通过")
 
 

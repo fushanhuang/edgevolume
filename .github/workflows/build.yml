@@ -17,6 +17,27 @@ jobs:
       - name: Install dependencies
         run: brew install ldid
 
+      # 诊断：用 plutil -lint 精确定位 pbxproj / plist 的语法错误行号
+      - name: Diagnose project files
+        run: |
+          echo "===== .xcodeproj 文件清单 ====="
+          find EdgeVolume.xcodeproj -type f | sort
+          for f in EdgeVolume.xcodeproj/project.pbxproj \
+                   EdgeVolume/Info.plist \
+                   EdgeVolume/entitlements.plist \
+                   EdgeVolume.xcodeproj/xcshareddata/xcschemes/EdgeVolume.xcscheme \
+                   EdgeVolume.xcodeproj/project.xcworkspace/contents.xcworkspacedata; do
+            echo "----- plutil -lint $f -----"
+            plutil -lint "$f" || true
+          done
+          echo "===== pbxproj 前 6 行（检查 BOM/编码）====="
+          head -6 EdgeVolume.xcodeproj/project.pbxproj | od -c | head -12
+          echo "===== 反斜杠与 CRLF 统计 ====="
+          printf 'backslash: %s\n' "$(grep -c '\\' EdgeVolume.xcodeproj/project.pbxproj || true)"
+          printf 'CR: %s\n' "$(grep -c $'\r' EdgeVolume.xcodeproj/project.pbxproj || true)"
+          echo "===== xcodebuild -list -json ====="
+          xcodebuild -project EdgeVolume.xcodeproj -list -json || true
+
       - name: Show schemes
         run: xcodebuild -project EdgeVolume.xcodeproj -list
 

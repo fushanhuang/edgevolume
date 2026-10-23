@@ -20,6 +20,13 @@ typedef NS_ENUM(NSInteger, EVRowTag) {
 
 @interface SettingsViewController ()
 @property (nonatomic, assign) BOOL suppressReload;
+
+- (UITableViewCell *)textCellWithTitle:(NSString *)title detail:(NSString *)detail in:(UITableView *)tableView;
+- (UITableViewCell *)switchCellWithTitle:(NSString *)title tag:(NSInteger)tag on:(BOOL)on in:(UITableView *)tableView;
+- (UITableViewCell *)segmentCellWithTitle:(NSString *)title items:(NSArray *)items tag:(NSInteger)tag selected:(NSInteger)selected in:(UITableView *)tableView;
+- (UITableViewCell *)sliderCellWithTitle:(NSString *)title tag:(NSInteger)tag value:(CGFloat)value min:(CGFloat)min max:(CGFloat)max unit:(NSString *)unit in:(UITableView *)tableView;
+- (UITableViewCell *)buttonCellWithTitle:(NSString *)title tag:(NSInteger)tag in:(UITableView *)tableView;
+- (NSString *)statusText;
 @end
 
 @implementation SettingsViewController

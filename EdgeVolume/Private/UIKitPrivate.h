@@ -2,6 +2,13 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "FBSOrientationObserver.h"
 #import "FBSOrientationUpdate.h"
+
+// FrontBoardServices：把当前进程注册为「系统级 Shell」。
+// 这是巨魔全局悬浮窗方案的核心入口——注册成功后本进程创建的
+// FBScene 才能成为前台场景并压在其他 App 之上。
+// 符号由 FrontBoard.tbd / FrontBoardServices.tbd 导出。
+extern void FBSystemShellInitialize(id completion);
+
 typedef struct {
 	unsigned val[8];
 } SCD_Struct_RB3;

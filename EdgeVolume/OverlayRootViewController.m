@@ -4,14 +4,21 @@
 #import "VolumeController.h"
 #import "AppDelegate.h"
 
-NSString *const kEVFloatingWindowDidRotateNotification = @"EVFloatingWindowDidRotateNotification";
-static NSString *const kEVSystemVolumeChangedNotification = @"EVSystemVolumeChangedNotification";
+// 注意：kEVFloatingWindowDidRotateNotification 的定义在 SceneDelegate.m，
+//       kEVSystemVolumeChangedNotification 的定义在 VolumeController.m，
+//       本文件只通过 extern 声明使用，避免重复定义（duplicate symbol）。
 
 @interface OverlayRootViewController ()
 @property (nonatomic, assign) OverlayMode mode;
 @property (nonatomic, strong) EdgeVolumeHandle *handle;
 @property (nonatomic, strong) VolumeHUDView *hud;
 @property (nonatomic, assign) CGPoint currentScreenCenter;
+
+- (void)setupTouchMode;
+- (void)applyOverlayLayoutAnimated:(BOOL)animated;
+- (void)showHUDForVolume:(float)volume;
+- (void)moveHandleToScreenCenter:(CGPoint)screenCenter;
+- (void)finishMove;
 @end
 
 @implementation OverlayRootViewController
