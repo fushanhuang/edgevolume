@@ -37,12 +37,6 @@ NSString *const kEVKeyboardLogChangedNotification     = @"EVKeyboardLogChangedNo
 #define EVModControl (1u << 2)
 #define EVModShift   (1u << 3)
 
-static void EVHIDEventCallback(void *target, void *refcon, void *queue, EVIOHIDEventRef event) {
-    @autoreleasepool {
-        [[KeyboardShortcutController shared] handleHIDEvent:event];
-    }
-}
-
 @interface KeyboardShortcutController ()
 @property (nonatomic, assign) BOOL hidAvailable;
 @property (nonatomic, copy) NSString *clientTypeDesc;
@@ -75,6 +69,15 @@ static void EVHIDEventCallback(void *target, void *refcon, void *queue, EVIOHIDE
 - (NSString *)modifierGlyphForUsage:(uint32_t)usage;
 - (void)logEvent:(NSString *)event;
 @end
+
+// IOHID 事件回调（C 函数，签名须与 IOHIDEventSystemClientEventCallback 一致）。
+// 注意：函数名不能与 IOHIDPrivate.h 里的 EVHIDEventCallback typedef 重名。
+// 必须放在类扩展之后——C 函数里调用 ObjC 方法需要先看到方法声明。
+static void EVHIDEventSystemEventCallback(void *target, void *refcon, void *queue, EVIOHIDEventRef event) {
+    @autoreleasepool {
+        [[KeyboardShortcutController shared] handleHIDEvent:event];
+    }
+}
 
 @implementation KeyboardShortcutController
 
@@ -169,7 +172,7 @@ static void EVHIDEventCallback(void *target, void *refcon, void *queue, EVIOHIDE
         return NO;
     }
 
-    self.fnRegister(client, EVHIDEventCallback, NULL, NULL);
+    self.fnRegister(client, EVHIDEventSystemEventCallback, NULL, NULL);
     self.fnSchedule(client, CFRunLoopGetMain(), kCFRunLoopDefaultMode);
     self.hidClient = client;
     return YES;
