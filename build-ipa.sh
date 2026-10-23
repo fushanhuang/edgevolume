@@ -64,12 +64,14 @@ echo "    已生成 EdgeVolume.xcodeproj（objectVersion: $(grep -o 'objectVersi
 ensure_project_readable
 
 echo "==> [2/5] 编译（不经过 Apple 签名，巨魔会重新签名）"
+# SYMROOT 固定到 ./build，避免产物散落到 DerivedData
 xcodebuild -project EdgeVolume.xcodeproj \
   -scheme EdgeVolume \
   -configuration Release \
   -sdk iphoneos \
   ARCHS=arm64 \
   ONLY_ACTIVE_ARCH=NO \
+  SYMROOT="$(pwd)/build" \
   CODE_SIGN_IDENTITY="" \
   CODE_SIGNING_REQUIRED=NO \
   CODE_SIGNING_ALLOWED=NO \
@@ -78,6 +80,16 @@ xcodebuild -project EdgeVolume.xcodeproj \
   build
 
 APP_PATH="build/Release-iphoneos/EdgeVolume.app"
+# 兜底：若个别 Xcode 版本仍把产物放进 DerivedData，自动定位真实路径
+if [ ! -d "$APP_PATH" ]; then
+  DD=$(xcodebuild -project EdgeVolume.xcodeproj -scheme EdgeVolume \
+        -configuration Release -sdk iphoneos -showBuildSettings 2>/dev/null \
+        | awk '/CONFIGURATION_BUILD_DIR =/ {print $3; exit}')
+  if [ -n "$DD" ] && [ -d "$DD/EdgeVolume.app" ]; then
+    echo "    产物位于 DerivedData：$DD"
+    APP_PATH="$DD/EdgeVolume.app"
+  fi
+fi
 if [ ! -d "$APP_PATH" ]; then
   echo "错误：未找到 $APP_PATH" >&2
   exit 1
